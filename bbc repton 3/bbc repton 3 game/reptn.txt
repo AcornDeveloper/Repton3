@@ -1,0 +1,669 @@
+; REPTN
+
+ bomba=&1
+ xcoor=&10
+ ycoor=&14
+ framc=&18
+ direc=&1C
+ monsc=&20
+ anoth=&24
+ spirp=&30
+ spirx=&38
+ spiry=&40
+ spirc=&48
+ spirf=&50
+ spird=&58
+ quart=&6C
+ aloof=&6E
+ kicks=&6F
+ tempa=&70
+ tempx=&71
+ tempy=&72
+ tempz=&73
+ indir=&74
+ death=&78
+ grids=&79
+ score=&80
+ tiara=&82
+ diamn=&83
+ twent=&85
+ paras=&87
+ movie=&90
+ mcode=&91
+ cosit=&92
+ shift=&93
+ reptn=&94
+ reptx=&95
+ repty=&96
+ sting=&97
+ copyx=&98
+ copyy=&99
+ lenth=&9A
+ cornx=&9B
+ corny=&9C
+ accum=&9D
+ xxadj=&9E
+ yyadj=&9F
+ HATCH=&401
+ MONST=&407
+ CHASE=&40A
+ SPIRT=&40D
+ TYLER=&1503
+ INDIR=&1509
+ DECIM=&1700
+ NOISE=&1703
+ METAL=&1706
+ GRIDS=&170C
+ PASTL=&1715
+ TDOWN=&1718
+ perip=&191F
+ DELAY=&1CA3
+ GBYTE=&1CA6
+ WBYTE=&1CA9
+ SCROL=&1E00
+ BLOBS=&2000
+ PLACE=&2003
+ DIGIT=&2103
+ SUQRA=&2300
+ MAGNI=&2400
+ EFFXS=&2523
+ OPENS=&27A3
+ PICKS=&27A6
+ ROCKS=&2960
+ WARPS=&3240
+ EDITS=&3230
+ OSB=&FFF4
+
+ P%=&5810
+
+ RTS
+.RUNER JMPA
+.REPTN JMPB
+.BANGS JMPC
+.BOMBS JMPD
+.CODES JMPE
+.hopin
+ EQUB30:EQUB35:EQUB30:EQUB36
+.ctrlk
+ EQUB&BD:EQUB&9E:EQUB&B7:EQUB&97
+.store
+ EQUB0:EQUB0:EQUB0
+.cover
+ EQUBtwoes-onnes
+ EQUBthree-twoes
+ EQUBinfom-three
+.roads
+ EQUB&FF:EQUB1
+ EQUB0:EQUB0:EQUB1:EQUB&FF
+.lists
+ EQUWonnes:EQUWtwoes
+ EQUWthree
+.onnes
+ EQUB37:EQUB37
+ EQUB37:EQUB37
+ EQUB37:EQUB38
+ EQUB38:EQUB39
+ EQUB39:EQUB40
+ EQUB40:EQUB40
+ EQUB40:EQUB40
+ EQUB39:EQUB39
+ EQUB38:EQUB38
+.twoes
+ EQUB41:EQUB41
+ EQUB41:EQUB41
+ EQUB41:EQUB42
+ EQUB42:EQUB43
+ EQUB43:EQUB44
+ EQUB44:EQUB44
+ EQUB44:EQUB44
+ EQUB43:EQUB43
+ EQUB42:EQUB42
+.three
+ EQUB45:EQUB45:EQUB45:EQUB45
+ EQUB46:EQUB46:EQUB46:EQUB46
+.infom
+ EQUD&201:EQUD&80000703
+ EQUD&80808080:EQUD&80808080
+ EQUD&80808080:EQUD&80808080
+ EQUD&80070401:EQUD&80800605
+ EQUD&80808080:EQUD&80808080
+ EQUD&80808080:EQUD&80808080
+.shove
+ EQUB21:EQUB13
+.pushs
+ EQUB25:EQUB9
+.super
+ EQUB2:EQUB-2
+.idler
+ DECshift:BNEupdat
+ LDA#21:STAshift
+ LDA#19:JSROSB
+ LDAreptn:JSRSHARE
+ INCcosit:LDAcosit:AND#3:TAX
+ LDAhopin,X:JSRSHARE
+ JMPROCKS
+.right
+ EQUB&FF:EQUB0:EQUB0:EQUB&FF
+.chanl
+ EQUW&101:EQUW&202
+.A
+ LDA#4:STAmovie
+ LDA#3:STAsting
+ LDA#0:STAkicks
+.reads
+ LDAperip:BNEjoysk
+ LDYsting:LDXctrlk,Y
+ JSRMETAL:BMIroute:BPLlockd
+.joysk
+ LDYsting:LDXchanl,Y:LDA#128:JSROSB
+ TYA:LDXsting:EORright,X
+ CMP#&A0:BCSroute
+.lockd
+ DECsting:BPLreads
+ LDAmcode:BEQidler:DECmcode
+.updat JMPROCKS
+.route
+ LDYsting
+ LDAreptx:CLC:ADCadjux,Y:TAX
+ LDArepty:CLC:ADCadjuy,Y
+ JSRGBYTE:TAX
+ LDAinfom,X:BMIlockd
+ CMP#1:BNEearth
+ LDYsting:CPY#2:BCSlockd
+ STXaccum
+ LDAshove,Y:STAparas+1
+ LDA#17:STAparas+2
+ LDA#&F:STAparas+3:STAparas+4
+ LDAreptx:CLC:ADCsuper,Y:TAX
+ LDArepty:JSRGBYTE
+ CMP#6:BNElockd:STAparas
+ JSRBLOBS
+ INCkicks:LDYsting
+ LDAreptx:CLC:ADCadjux,Y:TAX
+ LDYrepty:LDA#6:JSRWBYTE
+ LDYsting
+ LDApushs,Y:STAparas+1
+ LDAreptx:CLC:ADCsuper,Y:TAX
+ LDYrepty
+ LDAaccum:STAparas:JSRWBYTE
+ JSRPLACE
+ LDA#6:STAparas
+ JSRPLACE
+.earth
+ LDA#80:STAmcode
+ LDA#0:STAmovie
+.worth
+ LDAdeath:BNEminit
+ JSRROCKS
+ JSRSPIOF
+ JSRMONOF
+ JSRHATCH
+ LDAsting:JSRSCROL
+ JSRJUMPS:CLI
+ JSREDGES
+ INCmovie
+ LDAmovie:CMP#4:BCSslide
+ JSRTDOWN
+ JSRMONON
+ JSRSPION
+ JSRCHASE
+ JMPworth
+.slide
+ JSRUPDAT
+ JSRMONON
+ JSRSPION
+ JSRACTON
+ LDA#0:STAkicks
+.minit RTS
+.JUMPS
+ LDAreptn:STAparas:LDXsting
+ LDA#17:CLC:ADCroads,X:STAparas+1
+ LDA#17:CLC:ADCroads+2,X:STAparas+2
+ LDA#&F:STAparas+3:STAparas+4
+ JSRPLACE
+ LDXsting:CPX#3
+ BCCfrees:DEX
+.frees
+ INCstore,X:LDAstore,X
+ CMPcover,X:BNEskips
+ LDA#0:STAstore,X
+.skips
+ TXA:ASLA:TAY
+ LDAlists,Y:STAtempa
+ LDAlists+1,Y:STAtempx
+ LDYstore,X:LDA(tempa),Y
+ JMPSHARE
+.EDGES
+ JSRINITL
+.edges
+ JSRMASKS
+ JSRCORDX
+ JSRCORDY
+ JSRBYTES
+ JSRBLOBS
+ INClenth:LDAlenth
+ CMP#9:BCCedges
+ RTS
+.MASKS
+ LDAsting:ASLA:ASLA
+ ADCmovie:TAX
+ LDAmaskx,X:STAparas+3
+ LDAmasky,X:STAparas+4
+ LDAlenth:BEQangle
+ CMP#8:BEQangle:RTS
+.angle
+ LSRA:LSRA:LSRA:STAtempa
+ LDAsting:ASLA:ADCtempa:TAX
+ LDAnintx,X:BMIfalse:STAparas+3
+.false
+ LDAninty,X:BMIworse:STAparas+4
+.worse RTS
+.maskx
+ EQUB2:EQUB1:EQUB8:EQUB4
+ EQUB4:EQUB8:EQUB1:EQUB2
+.masky
+ EQUB15:EQUB15:EQUB15:EQUB15
+ EQUB15:EQUB15:EQUB15:EQUB15
+ EQUB4:EQUB8:EQUB1:EQUB2
+ EQUB2:EQUB1:EQUB8:EQUB4
+.nintx
+ EQUB&FF:EQUB&FF
+ EQUB&FF:EQUB&FF
+.ninty
+ EQUB3:EQUB12
+ EQUB3:EQUB12
+ EQUB&FF:EQUB&FF
+ EQUB&FF:EQUB&FF
+.CORDX
+ LDAsting:ASLA:ASLA
+ ORAmovie:TAX
+ LDAcordx,X:BMIcalcs
+ STAparas+1:RTS
+.calcs
+ LDAlenth:ASLA:SEC:ROLA
+ STAparas+1:RTS
+.cordx
+ EQUB32:EQUB31:EQUB34:EQUB33
+ EQUB2:EQUB3:EQUB0:EQUB1
+.cordy
+ EQUB&FF:EQUB&FF:EQUB&FF:EQUB&FF
+ EQUB&FF:EQUB&FF:EQUB&FF:EQUB&FF
+ EQUB2:EQUB3:EQUB0:EQUB1
+ EQUB32:EQUB31:EQUB34:EQUB33
+.CORDY
+ LDAsting:ASLA:ASLA
+ ORAmovie:TAX
+ LDAcordy,X:BMIaline
+ STAparas+2:RTS
+.aline
+ LDAlenth:ASLA:SEC:ROLA
+ STAparas+2:RTS
+.BYTES
+ LDXsting
+ LDAcornx:CLC:ADCdirex,X
+ STAcornx
+ LDAcorny:CLC:ADCdirey,X
+ STAcorny
+ LDXcornx
+ JSRGBYTE:STAparas:RTS
+.direx
+ EQUB0:EQUB0
+.direy
+ EQUB1:EQUB1:EQUB0:EQUB0
+.adjux
+ EQUB1:EQUB-1
+.adjuy
+ EQUB0:EQUB0:EQUB-1:EQUB1
+.UPDAT
+ LDXreptx:LDYrepty
+ LDA#6:STAparas:JSRWBYTE
+ LDXsting
+ LDAtraix,X:STAparas+1
+ LDAtraiy,X:STAparas+2
+ LDA#&F:STAparas+3:STAparas+4
+ JSRPLACE
+ LDXsting
+ LDAreptx:CLC:ADCadjux,X:STAreptx
+ LDArepty:CLC:ADCadjuy,X:STArepty
+ LDXreptx:JSRGBYTE:STAaccum
+ TAX:LDAinfom,X
+ CMP#7:BEQinitl
+ LDAdeath:BNEinitl
+ LDXreptx:LDYrepty
+ LDA#30:JMPWBYTE
+.traix
+ EQUB13:EQUB21
+.traiy
+ EQUB17:EQUB17:EQUB21:EQUB13
+.INITL
+ LDA#0:STAlenth
+ LDXsting
+ LDAreptx:CLC:ADCsquax,X:STAcornx
+ LDArepty:CLC:ADCsquay,X:STAcorny
+ LDAmovie:CMP#2:BCCinitl
+ LDAcornx:CLC:ADCadjux,X:STAcornx
+ LDAcorny:CLC:ADCadjuy,X:STAcorny
+.initl RTS
+.squax
+ EQUB4:EQUB-4
+.squay
+ EQUB-5:EQUB-5
+ EQUB-4:EQUB4
+.ACTON
+ LDYaccum:LDAinfom,Y
+ ASLA:TAX
+ LDAaddrs+1,X:PHA
+ LDAaddrs,X:PHA:TYA
+.DUMMY RTS
+.addrs
+ EQUWSITON-1:EQUWSITON-1
+ EQUWDIAMD-1:EQUWCAPSL-1
+ EQUWKEYYS-1:EQUWTRANS-1
+ EQUWCROWN-1:EQUWDEATH-1
+ EQUWBOMBA-1
+.DIAMD
+ LDA#0:JSRNOISE
+ LDAscore:CLC:ADC#5:STAscore
+ LDAscore+1:ADC#0:STAscore+1
+ LDA#4:STAquart
+ LDAdiamn:SEC:SBC#1:STAdiamn
+ LDAdiamn+1:SBC#0:STAdiamn+1
+ LDA#1:JMPSITON
+.CAPSL
+ LDA#9:JSRNOISE
+ JSRDIGIT
+ JSRGRIDS
+ LDA#4:JMPSITON
+.KEYYS
+ LDA#2:JSRNOISE
+ JSRPICKS
+ LDA#25:JMPSITON
+.TRANS
+ JSRSUQRA
+ LDXreptx:LDYrepty
+ LDA#6:JSRWBYTE
+ LDAgrids:ASLA:ASLA:ASLA:ASLA:TAX
+ LDY#4
+.looks
+ LDAWARPS,X:BMInexts
+ CMPreptx:BNEnexts
+ LDAWARPS+1,X:CMPrepty:BEQslots
+.nexts
+ INX:INX:INX:INX
+ DEY:BNElooks
+.slots
+ LDAWARPS+2,X:STAreptx:STAcopyx
+ LDAWARPS+3,X:STArepty:STAcopyy
+ LDArepty:LDXreptx:JSRGBYTE
+ CMP#6:BNElefal
+ JSRMAGNI
+ JSRREPTN
+ JSRMONST
+ JSRSPIRT
+ LDA#30:LDXreptx
+ LDYrepty:JMPWBYTE
+.lefal
+ INCdeath
+ JSRMAGNI
+ JSRREPTN
+ LDX#50:JMPDELAY
+.CROWN
+ LDA#8:JSRNOISE
+ LDAscore:CLC:ADC#50:STAscore
+ LDAscore+1:ADC#0:STAscore+1
+ INCtiara
+ LDA#29:JMPSITON
+.DEATH
+ INCdeath
+.siton RTS
+.SITON
+ CMP#0:BEQsiton
+ CMP#24:BEQsiton
+ CMP#27:BEQsiton
+ CMP#47:BEQsiton
+ STAparas
+ LDA#17:STAparas+1:STAparas+2
+ LDA#&F:STAparas+3:STAparas+4
+ JMPPLACE
+.BOMBA
+ INCbomba:RTS
+.B
+ LDA#&FF
+ STAsting:STAtwent
+ STAbomba:STAmovie
+ LDA#&80:STAinfom+27
+ LDXreptx:LDYrepty
+ LDA#30:JSRWBYTE
+ LDA#30:JSRSHARE
+ LDA#6:STAparas
+ JMPPLACE
+.SHARE
+ STAreptn:STAparas
+ LDA#17:STAparas+1:STAparas+2
+ LDA#&F:STAparas+3:STAparas+4
+ JMPPLACE
+.flagm
+ EQUD0
+.prest
+ EQUD0
+.flags
+ EQUD0:EQUD0
+.press
+ EQUD0:EQUD0
+.MONOF
+ LDX#3
+.monof
+ LDA#0
+ STAflagm,X:STAprest,X
+ LDAanoth,X:BNEmonst
+ STXaloof
+ LDAxcoor,X:STAtempa
+ LDAmonsc,X:STAtempx
+ LDAycoor,X:STAtempy
+ LDAdirec,X:STAtempz
+ LDAframc,X:STAparas
+ JSROPENS:BCSblind
+ LDXaloof
+ INCprest,X
+ LDAindir
+ CMP#4:BCCplace:CMP#31:BCSplace
+ LDAindir+1
+ CMP#4:BCCplace:CMP#31:BCCblind
+.place
+ INCflagm,X
+ JSRPLACE
+.blind
+ LDXaloof
+.monst
+ DEX:BPLmonof:RTS
+.MONON
+ LDX#3
+.monot
+ LDAanoth,X:BNEmonon
+ STXaloof
+ LDAxcoor,X:STAtempa
+ LDAmonsc,X:STAtempx
+ LDAycoor,X:STAtempy
+ LDAdirec,X:STAtempz
+ LDAframc,X:STAparas
+ JSROPENS:BCSmoron
+ LDXaloof
+ LDAflagm,X:BNEplaic
+ LDAprest,X:BNEmoron
+.plaic
+ JSRPLACE
+.moron
+ LDXaloof
+.monon
+ DEX:BPLmonot:RTS
+.SPIOF
+ LDX#7
+.spiof
+ LDA#0
+ STAflags,X:STApress,X
+ LDAspirp,X:BNEspirt
+ STXaloof
+ LDAspirx,X:STAtempa
+ LDAspirc,X:STAtempx
+ LDAspiry,X:STAtempy
+ LDAspird,X:STAtempz
+ LDAspirf,X:STAparas
+ JSROPENS:BCSmugin
+ LDXaloof
+ INCpress,X
+ LDAindir
+ CMP#4:BCCplaqu:CMP#31:BCSplaqu
+ LDAindir+1
+ CMP#4:BCCplaqu:CMP#31:BCCmugin
+.plaqu
+ INCflags,X
+ JSRPLACE
+.mugin
+ LDXaloof
+.spirt
+ DEX:BPLspiof:RTS
+.SPION
+ LDX#7
+.spots
+ LDAspirp,X:BNEspion
+ STXaloof
+ LDAspirx,X:STAtempa
+ LDAspirc,X:STAtempx
+ LDAspiry,X:STAtempy
+ LDAspird,X:STAtempz
+ LDAspirf,X:STAparas
+ JSROPENS:BCSslogs
+ LDXaloof
+ LDAflags,X:BNEfishs
+ LDApress,X:BNEslogs
+.fishs
+ JSRPLACE
+.slogs
+ LDXaloof
+.spion
+ DEX:BPLspots:RTS
+.bangs
+ EQUB6
+ EQUB61:EQUB62
+ EQUB63:EQUB62
+ EQUB61:EQUB6
+.C
+ LDA#17:STAparas+1:STAparas+2
+ LDA#&F:STAparas+3:STAparas+4
+ LDX#6
+.explo
+ TXA:PHA
+ LDAbangs,X:STAparas
+ JSRBLOBS
+ JSREFFXS
+ PLA:TAX:DEX:BPLexplo
+.noeds RTS
+.D
+ LDA#8:STAinfom+27:RTS
+.specy
+ EQUW&111
+ EQUW&B1F:EQUB4
+ EQUS"SCREEN "
+ EQUW&41F:EQUB22
+ EQUS"Press       to CONTINUE"
+ EQUW&211
+ EQUW&121F:EQUB4
+.edits
+ EQUB0
+ EQUW&A1F:EQUB22
+ EQUS"SPACE"
+ EQUW&311
+ EQUW&A1F:EQUB8
+ EQUS"EDITOR CODE"
+.E
+ JSRTYLER
+ JSRPASTL
+ LDAgrids:CLC:ADC#65:STAedits
+ LDX#specy AND255:LDY#specy/256
+ LDA#E-specy:JSRINDIR
+ LDAgrids:ASLA:TAX
+ LDAEDITS,X:STAtempa
+ LDAEDITS+1,X:STAtempx
+ LDX#13:LDY#10:JMPDECIM
+
+ P%=&5E80
+
+ EQUD&0:EQUD&0
+ EQUD&0:EQUD&0
+ EQUD&0:EQUD&0
+ EQUD&0:EQUD&0
+ EQUD&0:EQUD&0
+ EQUD&1000000:EQUD&12231310
+ EQUD&80000000:EQUD&8C484004
+ EQUD&0:EQUD&0
+ EQUD&0:EQUD&0
+ EQUD&101031:EQUD&0
+ EQUD&88448:EQUD&0
+ EQUD&0:EQUD&0
+ EQUD&0:EQUD&0
+ EQUD&0:EQUD&0
+ EQUD&0:EQUD&0
+ EQUD&0:EQUD&0
+ 
+ EQUD&0:EQUD&0
+ EQUD&0:EQUD&330000
+ EQUD&0:EQUD&20000000
+ EQUD&0:EQUD&0
+ EQUD&0:EQUD&11000011
+ EQUD&42218010:EQUD&20842206
+ EQUD&19510080:EQUD&46680428
+ EQUD&0:EQUD&8000
+ EQUD&0:EQUD&0
+ EQUD&826630A0:EQUD&104073
+ EQUD&5988C2B8:EQUD&80A200
+ EQUD&0:EQUD&0
+ EQUD&0:EQUD&0
+ EQUD&0:EQUD&0
+ EQUD&0:EQUD&0
+ EQUD&0:EQUD&0
+ 
+ EQUD&0:EQUD&22312000
+ EQUD&5840000:EQUD&40018800
+ EQUD&800000:EQUD&2080066
+ EQUD&0:EQUD&20080880
+ EQUD&53130002:EQUD&47000010
+ EQUD&10061605:EQUD&40000080
+ EQUD&A0604103:EQUD&40401
+ EQUD&0:EQUD&286C0088
+ EQUD&4400:EQUD&114051
+ EQUD&848B008:EQUD&60430
+ EQUD&D0302001:EQUD&2000482
+ EQUD&8:EQUD&88002020
+ EQUD&100000:EQUD&0
+ EQUD&2046DE04:EQUD&30
+ EQUD&50C0001D:EQUD&8000
+ EQUD&80800000:EQUD0
+
+ P%=&CA0
+
+ LDX#&5F
+.trans
+ LDA&6000,X:STA&CA0,X
+ DEX:BPLtrans:RTS
+.yadju EQUD&100FF
+.xadju EQUD&FF000100
+.paths EQUD&2010300
+.ADJUS
+ LDXaloof
+ LDAspirx,X:STAxxadj
+ LDAspiry,X:STAyyadj
+ LDY#3
+.looks
+ STYaccum
+ LDAxxadj:CLC:ADCxadju,Y:TAX
+ LDAyyadj:CLC:ADCyadju,Y
+ JSRGBYTE
+ LDYaccum
+ CMP#31:BEQfreds
+ CMP#6:BEQfreds
+ CMP#2:BEQfreds
+ CMP#3:BEQfreds
+ LDXaloof
+ LDApaths,Y:STAspird,X
+.freds
+ DEY:BPLlooks:RTS

@@ -1,0 +1,77 @@
+; SPRIT
+ indir=&74
+ start=&7B
+ paras=&87
+ ofset=&210
+ ofses=&318
+ SPRIT=&4000
+
+ P%=&2000
+
+.BLOBS JMPA
+.PLACE JMPB
+.A
+ JSRCALCS
+.other
+ TXA:AND#3:TAY:LDAmasks,Y:ANDparas+3:BEQfinit
+ TXA:LSRA:LSRA:TAY:LDAmasks,Y:ANDparas+4:BEQfinit:LDY#7
+.sectn
+ LDA(paras+5),Y:STA(paras+7),Y
+ DEY
+ LDA(paras+5),Y:STA(paras+7),Y
+ DEY
+ LDA(paras+5),Y:STA(paras+7),Y
+ DEY
+ LDA(paras+5),Y:STA(paras+7),Y
+ DEY:BPLsectn
+.finit
+ LDAparas+5:CLC:ADC#8:STAparas+5
+ TXA:AND#3:ASLA:TAY:LDAparas+7
+ CLC:ADCaddit,Y:STAparas+7
+ LDAparas+8:ADCaddit+1,Y
+ BPLnexts:SEC:SBC#&20
+.nexts
+ STAparas+8
+ INX:CPX#16:BCCother:RTS
+.addit
+ EQUW8:EQUW8:EQUW8:EQUW232
+.masks
+ EQUD&1020408
+.B
+ JSRCALCS
+.tuthr
+ TXA:AND#3:TAY:LDAmasks,Y:ANDparas+3:BEQfinis
+ TXA:LSRA:LSRA:TAY:LDAmasks,Y:ANDparas+4:BEQfinis:LDY#7
+.paper
+ LDA(paras+5),Y:EOR(paras+7),Y
+ STA(paras+7),Y
+ DEY
+ LDA(paras+5),Y:EOR(paras+7),Y
+ STA(paras+7),Y
+ DEY:BPLpaper
+.finis
+ LDAparas+5:CLC:ADC#8:STAparas+5
+ TXA:AND#3:ASLA:TAY:LDAparas+7
+ CLC:ADCaddit,Y:STAparas+7
+ LDAparas+8:ADCaddit+1,Y
+ BPLvests:SEC:SBC#&20
+.vests
+ STAparas+8
+ INX:CPX#16:BCCtuthr:RTS
+.CALCS
+ LDAstart:SEC:SBC#ofses AND255
+ STAindir
+ LDAstart+1:SBC#ofses/256
+ STAindir+1
+ LDAparas:LSRA:TAX:RORA:AND#&80
+ CLC:ADC#SPRIT AND255:STAparas+5
+ TXA:ADC#SPRIT/256:STAparas+6
+ LDAparas+1:ASLA:ASLA
+ ASLA:ROLparas+8
+ CLC:ADCindir:STAparas+7
+ LDAparas+8:AND#1:ADCindir+1
+ STAparas+8
+ LDAparas+2:CLC:ADCparas+8
+ BPLthats:SEC:SBC#&20
+.thats
+ STAparas+8:LDX#0:RTS

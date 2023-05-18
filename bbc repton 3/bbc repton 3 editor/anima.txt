@@ -1,0 +1,116 @@
+; ANIMA
+ pages=&60
+ tempa=&70
+ tempx=&71
+ tempy=&72
+ tempz=&73
+ choic=&80
+ paras=&86
+ INDIR=&1556
+ ghost=&1586
+ BLOBS=&19C0
+ ARRON=&1AC0
+ AROFF=&1AC3
+ PERIP=&1AC9
+ RELES=&1AD5
+ DELAY=&2406
+ CODES=&3230
+ BASES=&32E0
+ SPRIT=&4000
+ OSW=&FFEE
+ OSO=&FFF1
+ OSB=&FFF4
+ OSC=&FFF7
+
+ P%=&2600
+
+.ANIMA JMPA
+.FRAME JMPB
+.SLATE JMPC
+.DIREC JMPD
+.STUFF JMPE
+.A
+ LDXghost:CPX#30:BCCnoanm:CPX#47:BEQnoanm
+ JSRAROFF:LDXghost
+ LDAlinks-30,X:PHA:AND#7:STApages
+ PLA:LSRA:LSRA:LSRA:STApages+1
+.round LDYpages+1:LDAchart,Y:JSRB+3:LDX#21:STXpages+2
+.delay LDA#19:JSROSB:JSRPERIP:LDAchoic:BNEpress:DECpages+2:BNEdelay
+ INCpages+1:DECpages:BNEround:BEQA
+.press
+ JSRARRON
+ JSRRELES
+.B
+ LDAghost:STAparas
+ LDX#33:STXparas+1
+ LDY#15:STYparas+2
+ STYparas+3:STYparas+4
+ JMPBLOBS
+.noanm RTS
+.links
+ EQUB(rlook-chart)*8+4
+ EQUB(spirt-chart)*8+2
+ EQUB(spirt-chart)*8+2
+ EQUB(monst-chart)*8+2
+ EQUB(monst-chart)*8+2
+ EQUB(rlook-chart)*8+4
+ EQUB(rlook-chart)*8+4
+ EQUB(walkl-chart)*8+6
+ EQUB(walkl-chart)*8+6
+ EQUB(walkl-chart)*8+6
+ EQUB(walkl-chart)*8+6
+ EQUB(walkr-chart)*8+6
+ EQUB(walkr-chart)*8+6
+ EQUB(walkr-chart)*8+6
+ EQUB(walkr-chart)*8+6
+ EQUB(waves-chart)*8+2
+ EQUB(waves-chart)*8+2
+.chart
+.rlook EQUB30:EQUB35:EQUB30:EQUB36
+.spirt EQUB31:EQUB32
+.monst EQUB33:EQUB34
+.walkl EQUB37:EQUB38:EQUB39:EQUB40
+ EQUB39:EQUB38
+.walkr EQUB41:EQUB42:EQUB43:EQUB44
+ EQUB43:EQUB42
+.waves EQUB45:EQUB46
+.slate
+ EQUB18:EQUB0:EQUB128
+ EQUB24
+ EQUW1056:EQUW416
+ EQUW1176:EQUW540
+ EQUB16:EQUB26
+.C
+ LDX#slate AND255:LDY#slate/256
+ LDA#C-slate:JMPINDIR
+.drive
+ EQUS"DRIVE0":EQUB&D
+.direc
+ EQUS"DIR$":EQUB&D
+.D
+ LDX#direc AND255:LDY#direc/256
+ JSROSC
+ LDX#drive AND255:LDY#drive/256
+ JMPOSC
+.fives
+ EQUB&C6:EQUB&18:EQUB&63
+ EQUB&8C:EQUB&31
+.E
+ LDA#0:LDX#15
+.users
+ STACODES,X:DEX:BPLusers
+ LDX#7:STXtempy
+ LDA#BASES AND255:STAtempa
+ LDA#BASES/256:STAtempx
+.relox
+ LDX#84
+.mobil
+ LDY#4
+.chain
+ LDAfives,Y:STA(tempa),Y
+ DEY:BPLchain
+ LDAtempa:CLC:ADC#5:STAtempa
+ BCCnofiv:INCtempx
+.nofiv
+ DEX:BNEmobil
+ DECtempy:BPLrelox:RTS

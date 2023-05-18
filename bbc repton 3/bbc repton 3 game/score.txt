@@ -1,0 +1,153 @@
+; SCORE
+
+ monst=&2
+ tempa=&70
+ tempx=&71
+ tempy=&72
+ tempz=&73
+ grids=&79
+ watch=&7D
+ lives=&7F
+ score=&80
+ tiara=&82
+ diamn=&83
+ field=&C00
+ fielh=&C20
+ TYLER=&1503
+ INDIR=&1509
+ DECIM=&1700
+ GRIDS=&170C
+ COLOF=&1913
+ NUMBR=&1E06
+ WORDS=&31E0
+ SANDS=&3220
+ OSW=&FFEE
+ OSB=&FFF4
+ OSC=&FFF7
+
+ P%=&2100
+
+.BEGIN JMPA
+.DIGIT JMPB
+.ADDUP JMPC
+.DIREC JMPD
+.bottm
+ EQUW&311
+ EQUW&21F:EQUB6
+ EQUS"REPTON 3 the story so far..."
+ EQUW&111
+ EQUW&61F:EQUB27
+ EQUS"Press"
+ EQUW&121F:EQUB27
+ EQUS"to PLAY"
+ EQUW&111
+ EQUW&A1F:EQUB10:EQUS"Time :"
+ EQUW&91F:EQUB12:EQUS"Lives :"
+ EQUW&91F:EQUB14:EQUS"Score :"
+ EQUW&81F:EQUB16:EQUS"Crowns :"
+ EQUW&81F:EQUB18:EQUS"Screen :"
+ EQUW&61F:EQUB20:EQUS"Diamonds :"
+ EQUW&61F:EQUB22:EQUS"Monsters :"
+ EQUW&61F:EQUB24:EQUS"Password :"
+ EQUW&211
+ EQUW&C1F:EQUB27
+ EQUS"SPACE"
+.A
+ JSRTYLER
+ JSRCOLOF
+ LDX#bottm AND255:LDY#bottm/256
+ LDA#A-bottm:JSRINDIR
+ JSRWATCH
+ JSRLIVES
+ JSRSCORE
+ JSRCROWN
+ JSRAREAS
+ JSRDIAMD
+ JSRPASSW
+ JSREGGYS
+ JMPGRIDS
+.mapps
+ EQUW&111F:EQUB18
+.scren EQUB0
+.lasts
+ EQUW&8011
+ EQUB31:EQUB7:EQUB28:EQUS"   "
+.WATCH
+ LDAwatch:STAtempa
+ LDAwatch+1:STAtempx
+ LDX#17:LDY#10:JMPDECIM
+.SCORE
+ LDAscore:STAtempa
+ LDAscore+1:STAtempx
+ LDX#17:LDY#14:JMPDECIM
+.DIAMD
+ LDYdiamn+1:BNEenuff:STYtempx
+ LDXdiamn:CPX#7:BCSenuff:STXtempa
+ TXA:BEQruner
+ LDX#17:LDY#20:JMPDECIM
+.enuff
+ LDX#plenty AND255:LDY#plenty/256
+ LDA#plenty/256:STAtempx
+ LDA#CROWN-plenty:JMPINDIR
+.runer
+ LDX#times AND255:LDY#times/256
+ LDA#plenty-times:JMPINDIR
+.times
+ EQUW&211
+ EQUW&111F:EQUB20
+ EQUS"Defuse Timebomb"
+.plenty
+ EQUW&111F:EQUB20
+ EQUS"Plenty'"
+.CROWN
+ LDAtiara:STAtempa
+ LDA#0:STAtempx
+ LDX#17:LDY#16:JMPDECIM
+.LIVES
+ LDAlives:STAtempa
+ LDA#0:STAtempx
+ LDX#17:LDY#12:JMPDECIM
+.AREAS
+ LDAgrids:CLC:ADC#65:STAscren
+ LDX#mapps AND255:LDY#mapps/256
+ LDA#lasts-mapps:JMPINDIR
+.B
+ LDAgrids:ASLA:TAX
+ LDASANDS,X:STAwatch
+ LDASANDS+1,X:STAwatch+1
+ RTS
+.C
+ JSRNUMBR
+ LDA#0:TAY
+ CLC:ADCfield+1:TAX
+ TYA:ADCfielh+1:TAY
+ TXA:CLC:ADCfield+22:TAX
+ TYA:ADCfielh+22:TAY
+ TXA:CLC:ADCfield+23:STAdiamn
+ TYA:ADCfielh+23:STAdiamn+1
+ LDAfield+24:STAmonst
+ RTS
+.passw
+ EQUW&111F:EQUB24
+.PASSW
+ LDX#passw AND255:LDY#passw/256
+ LDA#PASSW-passw:JSRINDIR
+ LDAgrids:ASLA:ASLA:ASLA:TAX
+ LDY#7
+.strin
+ LDAWORDS,X:CMP#&D:BEQendof
+ JSROSW:INX:DEY:BNEstrin
+.endof RTS
+.EGGYS
+ LDAmonst:STAtempa
+ LDA#0:STAtempx
+ LDX#17:LDY#22:JMPDECIM
+.drive
+ EQUS"DRIVE 0":EQUB&D
+.direc
+ EQUS"DIR$":EQUB&D
+.D
+ LDX#direc AND255:LDY#direc/256
+ JSROSC
+ LDX#drive AND255:LDY#drive/256
+ JMPOSC

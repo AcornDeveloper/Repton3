@@ -1,0 +1,165 @@
+; PULLS
+ pages=&60
+ tempa=&70
+ tempx=&71
+ tempy=&72
+ tempz=&73
+ indir=&74
+ sprix=&76
+ spriy=&77
+ count=&78
+ bases=&79
+ secon=&7B
+ choic=&80
+ vital=&85
+ presy=&8F
+ WRITE=&1500
+ WRONG=&1503
+ INDIR=&1556
+ ARRON=&1AC0
+ AROFF=&1AC3
+ PERIP=&1AC9
+ ARRGO=&1ACC
+ STORE=&1ACF
+ RESTR=&1ADE
+ SPRIT=&4000
+ OSW=&FFEE
+ OSO=&FFF1
+ OSB=&FFF4
+
+ P%=&2400
+
+.PULLS JMPA
+.PUSHS JMPB
+.DELAY JMPC
+.INVER JMPD
+.pulls
+ EQUB1:EQUB1:EQUB6:EQUB3
+ EQUB3:EQUB1:EQUB4:EQUB5
+ EQUB7:EQUB1:EQUB7:EQUB5
+ EQUB11:EQUB1:EQUB3:EQUB9
+.table
+ EQUWmenu1
+ EQUWmenu2
+ EQUWmenu3
+ EQUWmenu4
+.lenth
+ EQUBmenu2-menu1
+ EQUBmenu3-menu2
+ EQUBmenu4-menu3
+ EQUBmenu5-menu4
+.menu1
+ EQUW&51F:EQUB2
+ EQUS"REPTON 3"
+ EQUW&31F:EQUB3
+ EQUS"Disc version"
+.menu2
+ EQUW&71F:EQUB2
+ EQUS"Z X ? *"
+ EQUW&71F:EQUB3
+ EQUS"Cursor"
+ EQUW&71F:EQUB4
+ EQUS"Switch"
+ EQUW&71F:EQUB5
+ EQUS"Analogue"
+.menu3
+ EQUW&F1F:EQUB2
+ EQUS"Animate"
+ EQUW&F1F:EQUB3
+ EQUS"Unset pixels"
+ EQUW&F1F:EQUB4
+ EQUS"Invert pixels"
+ EQUW&F1F:EQUB5
+ EQUS"Wipe"
+.menu4
+ EQUW&171F:EQUB2
+ EQUS"Map A"
+ EQUW&1B1F:EQUB3
+ EQUS"B"
+ EQUW&1B1F:EQUB4
+ EQUS"C"
+ EQUW&1B1F:EQUB5
+ EQUS"D"
+ EQUW&1B1F:EQUB6
+ EQUS"E"
+ EQUW&1B1F:EQUB7
+ EQUS"F"
+ EQUW&1B1F:EQUB8
+ EQUS"G"
+ EQUW&1B1F:EQUB9
+ EQUS"H"
+.menu5
+.A
+ STAvital:TAX:BMInotus:JSRAROFF
+ LDAvital:ASLA
+ ASLA:ADC#pulls AND255:TAX
+ LDA#pulls/256:ADC#0:TAY
+ JSRSTORE:JSRARRON
+ JSRWRITE:LDXvital
+ LDAlenth,X:PHA
+ TXA:ASLA:TAX:LDYtable+1,X
+ LDAtable,X:TAX:PLA
+ JSRINDIR:JMPWRONG
+.B
+ LDAvital:BMInotus:JSRAROFF
+ LDAvital:ASLA:ASLA:ADC#pulls AND255:TAX
+ LDA#pulls/256:ADC#0:TAY
+ JSRRESTR:JMPARRON
+.SUBTR LDAtempa:STYtempa:SEC:SBCtempa
+ STAtempa:BCSsubtr:DECtempx:.subtr RTS
+.heigh EQUB28:EQUB29
+.C
+ TXA:PHA:LDA#19:JSROSB:PLA:TAX:DEX:BNEC:.notus RTS
+.slits
+ EQUB18:EQUB3:EQUB130
+ EQUB24
+.leftx EQUW0
+.botty EQUW0
+.right EQUW0
+.dotty EQUW0
+ EQUB16
+.D
+ LDAspriy:STApresy
+.inver
+ JSRPERIP
+ JSRARRGO
+ LDAspriy:CMPpresy:BEQonway
+ JSRAROFF
+ LDYpresy:JSRBOXIT
+ LDApresy:JSRCAKES
+ LDAspriy:STApresy
+ LDYspriy:JSRBOXIT
+ LDApresy:JSRCAKES
+ JSRARRON
+.onway
+ LDAchoic:BNEinver
+ LDAspriy:EOR#&FF
+ LSRA:LSRA:LSRA:TAY
+ DEY:DEY
+ LDA#26:JMPOSW
+.BOXIT
+ LDAvital:ASLA:ASLA:TAX
+ LDAcornx,X:STAleftx
+ LDAcornx+1,X:STAleftx+1
+ LDAcornx+2,X:STAright
+ LDAcornx+3,X:STAright+1
+ TYA:ASLA:ROLtempx
+ ASLA:ROLtempx:PHA:AND#&E0:STAbotty
+ LDAtempx:AND#3:STAbotty+1:TAX:PLA
+ CLC:ADC#32:AND#&E0:STAdotty
+ LDAbotty+1:ADC#0:STAdotty+1
+.rubit RTS
+.CAKES
+ LDXvital
+ CMPlimit,X:BCCrubit
+ CMP#240:BCSrubit
+ LDX#slits AND255:LDY#slits/256
+ LDA#D-slits:JMPINDIR
+.cornx
+ EQUW0:EQUW0
+ EQUW192:EQUW508
+ EQUW448:EQUW954
+ EQUW704:EQUW952
+.limit
+ EQUB255:EQUB208
+ EQUB208:EQUB176

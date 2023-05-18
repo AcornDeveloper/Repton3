@@ -1,0 +1,109 @@
+; MAGNI
+
+ pages=&60
+ tempa=&70
+ tempx=&71
+ tempy=&72
+ tempz=&73
+ grids=&79
+ paras=&87
+ reptx=&95
+ repty=&96
+ copyx=&98
+ copyy=&99
+ sidex=&9E
+ sidey=&9F
+ ADDIT=&1A4
+ BUFFR=&900
+ UPACK=&1709
+ GBYTE=&1CA6
+ WBYTE=&1CA9
+ TIM28=&1D7E
+ BLOBS=&2000
+ BASES=&32E0
+ OSW=&FFEE
+ OSB=&FFF4
+
+ P%=&2400
+
+.MAGNI JMPA
+.FINDB JMPB
+.FINDR JMPC
+.SHEET JMPD
+.A
+ LDA#17:STApages
+ LDA#1:STApages+1
+.capit
+ LDApages:STAsidex:STAsidey
+ LDX#3:STXpages+2
+.suqra
+ JSRSIDES
+ DECpages+2:BPLsuqra
+ INCpages+1:INCpages+1
+ DECpages
+ LDApages:CMP#2:BCScapit:RTS
+.SIDES
+ LDXpages+1
+.lines
+ TXA:PHA
+ LDAsidex:LSRA:LSRA:STAtempa
+ LDAreptx:SEC:SBC#4
+ CLC:ADCtempa:TAX
+ LDAsidey:LSRA:LSRA:STAtempa
+ LDArepty:SEC:SBC#4
+ CLC:ADCtempa:JSRGBYTE
+ CMP#30:BNEaccum:LDA#6
+.accum
+ STAparas
+ LDAsidex:AND#&FC
+ ORA#1:STAparas+1
+ LDAsidey:AND#&FC
+ ORA#1:STAparas+2
+ LDAsidex:AND#3:TAX
+ LDAtabbx,X:STAparas+3
+ LDAsidey:AND#3:TAY
+ LDAtabbx,Y:STAparas+4
+ JSRBLOBS
+ LDXpages+2
+ LDAsidex:CLC:ADCxdire,X:STAsidex
+ LDAsidey:CLC:ADCydire,X:STAsidey
+ PLA:TAX:DEX:BNElines:RTS
+.xdire
+ EQUB0:EQUB-1:EQUB0:EQUB1
+.ydire
+ EQUB-1:EQUB0:EQUB1:EQUB0
+.tabbx
+ EQUB8:EQUB4:EQUB2:EQUB1
+.B
+ STAtempy:LDX#46
+.fresh LDY#27
+ LDATIM28,X:STAtempa
+ LDATIM28+1,X:STAtempx
+.seach LDA(tempa),Y:CMPtempy:BEQgrabs
+ DEY:BPLseach:DEX:DEX:BPLfresh
+ LDX#0:LDY#0:CLC:RTS
+.grabs
+ TXA:LSRA:PHA:TYA:TAX
+ PLA:TAY:SEC:RTS
+.C
+ LDA#30:JSRFINDB
+ STXreptx:STXcopyx
+ STYrepty:STYcopyy
+ LDA#30:JMPWBYTE
+.where
+ EQUWBUFFR:EQUW0:EQUB84
+.addrs
+ EQUWBASES
+ EQUWBASES+(ADDIT*1)
+ EQUWBASES+(ADDIT*2)
+ EQUWBASES+(ADDIT*3)
+ EQUWBASES+(ADDIT*4)
+ EQUWBASES+(ADDIT*5)
+ EQUWBASES+(ADDIT*6)
+ EQUWBASES+(ADDIT*7)
+.D
+ LDAgrids:ASLA:TAX
+ LDAaddrs,X:STAwhere+2
+ LDAaddrs+1,X:STAwhere+3
+ LDX#where AND255:LDY#where/256
+ JMPUPACK

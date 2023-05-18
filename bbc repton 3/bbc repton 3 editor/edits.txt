@@ -1,0 +1,119 @@
+; EDITS
+ pages=&60
+ tempa=&70
+ tempx=&71
+ tempy=&72
+ tempz=&73
+ sprix=&76
+ spriy=&77
+ choic=&80
+ INDIR=&1556
+ palet=&1584
+ grids=&1585
+ ghost=&1586
+ TI320=&1A2D
+ ARRON=&1AC0
+ AROFF=&1AC3
+ FRAME=&2603
+ SPRIT=&4000
+ OSW=&FFEE
+ OSO=&FFF1
+ OSB=&FFF4
+
+ P%=&2700
+
+.XPLOW JMPA
+.ADJUS JMPB
+.BLANK JMPC
+.UNSET JMPD
+.SWAPS JMPE
+.GHOST
+ LDAghost
+ LSRA:TAX:RORA:AND#128:CLC:ADC#SPRIT AND255:STApages
+ TXA:ADC#SPRIT/256:STApages+1
+ LDY#127:RTS
+.BLOCK CPX#2:BCCblock:CPX#30:BCSblock:PHA
+ TXA:ASLA:ASLA:ASLA:STAtempx
+ TYA:PHA:AND#&FE:TAX
+ LDAtempx:CLC:ADCTI320,X:STAtempx
+ LDA#0:ADCTI320+1,X:STAtempy
+ PLA:AND#1:ASLA:ASLA:TAY:PLA:LDX#4
+.pixel STA(tempx),Y:INY:DEX:BNEpixel:.block RTS
+.boxin
+ EQUB18:EQUB0:EQUB1
+ EQUW&419:EQUW248:EQUW348
+ EQUW&119:EQUW0:EQUW516
+ EQUW&119:EQUW520:EQUW0
+ EQUW&119:EQUW0:EQUW-516
+ EQUW&119:EQUW-516:EQUW0
+.A
+ LDX#boxin AND255:LDY#boxin/256:LDA#A-boxin:JSRINDIR
+ JSRGHOST:LDY#0
+.bacin STYpages+2:LDA#3:STApages+3 
+ LDA(pages),Y:LDX#8
+.rever ASLA:RORpages+4:DEX:BNErever
+.quart
+ LDApages+3:TAX:LDApages+4:ANDbmask,X
+.rotat LSRA:DEX:BPLrotat:PHP
+ LSRA:LSRA:LSRA:PLP:ROLA:TAX:LDAphils,X:PHA
+ TYA:AND#&18:LSRA:ADCpages+3:ADC#8:TAX
+ TYA:AND#7:CLC:ADC#10:STApages+5:TYA:LSRA:LSRA:AND#&F8:CLC:ADCpages+5:TAY
+ PLA:JSRBLOCK
+ LDYpages+2:DECpages+3:BPLquart:INY:BPLbacin:.equal RTS
+.bmask EQUD&88442211
+.phils EQUD&FF0FF000
+.bytes EQUD&FFF00F00
+.B
+ LDAsprix:SEC:SBC#32:CMP#64:BCSequal:LSRA:LSRA:TAX
+ LDAspriy:SEC:SBC#88:CMP#128:BCSequal:LSRA:LSRA:EOR#31:TAY
+ STXtempx:STYtempy
+ AND#7:STAtempz:TXA:AND#&FC:ASLA:CLC:ADCtempz:STAtempz
+ TYA:AND#&F8:ASLA:ASLA:CLC:ADCtempz:STAtempz
+ JSRGHOST:LDApages:CLC:ADCtempz:STApages:BCCright:INCpages+1
+.right
+ LDAtempx:AND#3:EOR#3:TAX:STAtempa:LDY#0
+ LDAbmask,X:AND(pages),Y:STAtempz
+ LDApalet:LSRA:PHP:ASLA:ASLA:ASLA:PLP
+.roles ROLA:DEX:BPLroles:CMPtempz:BEQequal:STAtempz
+ LDXtempa:LDAbmask,X:EOR#&FF:LDY#0
+ AND(pages),Y:ORAtempz:STA(pages),Y
+ JSRAROFF
+ LDXpalet:LDAbytes,X:PHA
+ LDAtempx:CLC:ADC#8:TAX
+ LDAtempy:CLC:ADC#10:TAY
+ PLA:JSRBLOCK
+ JSRARRON:JMPFRAME
+.direx EQUD0
+.direy EQUD0
+.offsx EQUD&FF0001
+.offsy EQUD&FF000100
+.C
+ JSRAROFF
+ JSRGHOST:LDXpalet:LDAbytes,X
+.slate STA(pages),Y:DEY:BPLslate
+.saves
+ JSRFRAME:JSRXPLOW:JMPARRON
+.D
+ JSRAROFF
+ JSRGHOST
+.inver
+ LDA(pages),Y:EOR#&FF:STA(pages),Y:DEY:BPLinver
+ JMPsaves
+.filtr
+ EQUD&11224488
+.E
+ JSRAROFF
+ JSRGHOST
+.emuls
+ LDA(pages),Y:STAtempa
+ LDApalet:LSRA:PHP
+ ASLA:ASLA:ASLA:PLP:ROLA:STAtempx
+ LDX#3
+.unset
+ LDAtempa:ANDfiltr,X:CMPtempx
+ BNEshade:LDAtempa
+ EORtempx:STAtempa
+.shade
+ ASLtempx:DEX:BPLunset
+ LDAtempa:STA(pages),Y
+ DEY:BPLemuls:BMIsaves

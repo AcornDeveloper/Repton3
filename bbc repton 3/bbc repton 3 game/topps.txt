@@ -1,0 +1,143 @@
+; TOPPS
+
+ randy=&F
+ pages=&60
+ tempa=&70
+ tempx=&71
+ tempy=&72
+ tempz=&73
+ indir=&74
+ death=&78
+ twent=&85
+ slows=&86
+ paras=&87
+ movie=&90
+ reptx=&95
+ repty=&96
+ sting=&97
+ GBYTE=&1CA6
+ WBYTE=&1CA9
+ BLOBS=&2000
+ PLACE=&2003
+ FINDB=&2403
+ OSO=&FFF1
+ OSB=&FFF4
+
+ P%=&27A0
+
+.FUNGY JMPA
+.OPENS JMPB
+.PICKS JMPC
+.xadin
+ EQUB1:EQUB&FF:EQUB0:EQUB0
+.yadin
+ EQUB0:EQUB0:EQUB&FF:EQUB1
+.A
+ DECslows:BNEfungy
+ LDA#4:STAslows
+ DECtwent:BPLjustr
+ LDA#23:STAtwent
+.justr
+ LDX#27:STXpages+2
+.mushy
+ LDAtwent:LDXpages+2:JSRGBYTE
+ CMP#26:BNEspore
+ LDArandy:AND#3:TAY
+ LDAxadin,Y:CLC:ADCpages+2
+ STApages:TAX
+ LDAyadin,Y:CLC:ADCtwent:STApages+1
+ JSRGBYTE
+ CMP#26:BEQspore
+ CMP#2:BEQspred
+ CMP#3:BEQspred
+ CMP#6:BEQspred
+ CMP#30:BEQgotya
+ BNEspore
+.spred
+ STAparas:LDA#26
+ LDXpages:LDYpages+1:JSRWBYTE
+ LDApages:STAtempa
+ LDApages+1:STAtempy
+ LDA#0:STAtempx:STAtempz
+ LDA#&FF:STAmovie
+ JSROPENS
+ BCSfungy:JSRPLACE
+ LDA#26:STAparas:JMPPLACE
+.spore
+ DECpages+2:BPLmushy
+.fungy RTS
+.gotya
+ INCdeath:RTS
+.REPTX
+ LDAreptx:ASLA:ASLA
+ ORA#1:STAparas+1
+ LDAmovie:CMP#4:BCSfungy
+ LDXsting:CPX#2:BCSfungy
+ TXA:BEQposit
+ LDAparas+1:SEC:SBCmovie
+ STAparas+1:RTS
+.posit
+ LDAparas+1:CLC:ADCmovie
+ STAparas+1:RTS
+.REPTY
+ LDArepty:ASLA:ASLA
+ ORA#1:STAparas+2
+ LDAmovie:CMP#4:BCSfungy
+ LDXsting:CPX#2:BCCfungy:BNEupper
+ LDAparas+2:SEC:SBCmovie
+ STAparas+2:RTS
+.upper
+ LDAparas+2:CLC:ADCmovie
+ STAparas+2:RTS
+.MONSX
+ LDAtempa:ASLA:ASLA
+ ORA#1:STAtempa
+ LDXtempz:CPX#2:BCSfungy
+ TXA:BNEzeros
+ LDAtempa:CLC:ADCtempx:STAtempa:RTS
+.zeros
+ LDAtempa:SEC:SBCtempx:STAtempa:RTS
+.MONSY
+ LDAtempy:ASLA:ASLA
+ ORA#1:STAtempy
+ LDYtempz:CPY#2:BCCfungy:BEQdouze
+ LDAtempy:CLC:ADCtempx:STAtempy:RTS
+.douze
+ LDAtempy:SEC:SBCtempx:STAtempy:RTS
+.B
+ JSRREPTX
+ JSRREPTY
+ JSRMONSX
+ JSRMONSY
+ LDAparas+1:SEC:SBC#17:STAparas+1
+ LDAtempa:SEC:SBCparas+1
+ CMP#35:BCSopens:STAparas+1
+ STAindir:TAX
+ LDAmasks,X:STAparas+3
+ LDAparas+2:SEC:SBC#17:STAparas+2
+ LDAtempy:SEC:SBCparas+2
+ CMP#35:BCSopens:STAparas+2
+ STAindir+1:TAY
+ LDAmasks,Y:STAparas+4
+ CLC
+.opens RTS
+.masks
+ EQUB1:EQUB3:EQUB7:EQUB15
+ EQUB15:EQUB15:EQUB15:EQUB15
+ EQUB15:EQUB15:EQUB15:EQUB15
+ EQUB15:EQUB15:EQUB15:EQUB15
+ EQUB15:EQUB15:EQUB15:EQUB15
+ EQUB15:EQUB15:EQUB15:EQUB15
+ EQUB15:EQUB15:EQUB15:EQUB15
+ EQUB15:EQUB15:EQUB15:EQUB15
+ EQUB14:EQUB12:EQUB8
+.C
+ LDA#22:JSRFINDB:BCCopens
+ STXparas+1:STYparas+2
+ LDA#1:STAparas:JSRWBYTE
+ LDAparas+1:STAtempa
+ LDAparas+2:STAtempy
+ LDA#0:STAtempx:STAtempz
+ LDA#&FF:STAmovie
+ JSROPENS:BCSC
+ JSRBLOBS:JMPC

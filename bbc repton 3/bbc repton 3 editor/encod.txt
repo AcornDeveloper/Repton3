@@ -1,0 +1,7 @@
+   10 REM ENCOD
+   20 A%=0
+   30 FORJ%=63 TO 0 STEP-1
+   40 J%?&31E0=J%?&31E0 EORA%
+   50 A%=A%+1
+   60 NEXT
+

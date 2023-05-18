@@ -1,0 +1,452 @@
+; MONST
+
+ monst=&2
+ randy=&F
+ xcoor=&10
+ ycoor=&14
+ framc=&18
+ direc=&1C
+ monsc=&20
+ anoth=&24
+ monsf=&28
+ bornm=&2C
+ spirp=&30
+ spirx=&38
+ spiry=&40
+ spirc=&48
+ spirf=&50
+ spird=&58
+ pages=&60
+ aloof=&6E
+ tempa=&70
+ tempx=&71
+ tempy=&72
+ tempz=&73
+ tunes=&76
+ death=&78
+ score=&80
+ paras=&87
+ movie=&90
+ reptx=&95
+ repty=&96
+ sting=&97
+ count=&B0
+ ADJUS=&CB8
+ NOISE=&1703
+ GBYTE=&1CA6
+ WBYTE=&1CA9
+ BLOBS=&2000
+ PLACE=&2003
+ FINDB=&2403
+ OPENS=&27A3
+ ROCKS=&2960
+ OSO=&FFF1
+ OSB=&FFF4
+ oct2=0
+ oct3=&10
+ oct4=&20
+ b=0
+ a`=1
+ a=2
+ g`=3
+ g=4
+ f`=5
+ f=6
+ e=7
+ d`=8
+ d=9
+ c`=10
+ c=11
+
+ P%=&400
+
+ RTS
+.HATCH JMPA
+.YOLKS JMPB
+.MONST JMPC
+.CHASE JMPD
+.SPIRT JMPE
+.JINGL JMPF
+.A
+ LDX#3
+.chick
+ LDAanoth,X:BMIenabl:BEQenabl
+ DECanoth,X:BNEenabl
+ LDAmovie:CMP#4:BCCcrack
+ STXaloof
+ LDYycoor,X:LDAxcoor,X:TAX
+ LDA#6:STAparas:JSRWBYTE
+ LDXaloof
+ LDA#32:STAbornm,X
+ LDAxcoor,X:STAtempa
+ LDAycoor,X:STAtempy
+ LDA#0
+ STAtempx:STAtempz
+ STAmonsc,X:STAdirec,X
+ JSROPENS:BCSeggon
+ JSRBLOBS
+ LDXaloof
+ LDAframc,X:STAparas
+ JSRPLACE
+ JMPROCKS
+.crack
+ INCanoth,X
+.enabl DEX:BPLchick
+.eggon RTS
+.B
+ LDX#3
+.yolks
+ LDA#3:STAmonsf,X
+ LDA#33:STAframc,X
+ LDA#&FF:STAanoth,X
+ DEX:BPLyolks
+ LDX#7
+.spirt
+ STXaloof
+ LDY#&FF:STYspirp,X
+ INY:STYspirc,X
+ INY:STYspird,X
+ LDA#3:STAcount,X
+ LDA#31:STAspirf,X
+ JSRFINDB:BCCwhisk
+ TXA:LDXaloof:STAspirx,X
+ STYspiry,X:INCspirp,X
+ TAX:LDA#6:JSRWBYTE
+ JSRADJUS
+.whisk
+ LDXaloof
+ DEX:BPLspirt:RTS
+.C
+ LDX#3
+.moors
+ LDAanoth,X:BNEnotri:STXaloof
+ LDAframc,X:STAparas
+ LDAxcoor,X:STAtempa
+ LDAmonsc,X:STAtempx
+ LDAycoor,X:STAtempy
+ LDAdirec,X:STAtempz
+ JSROPENS:BCSleafs:JSRPLACE
+.leafs LDXaloof
+.notri DEX:BPLmoors:RTS
+.E
+ LDX#7
+.vodka
+ LDAspirp,X:BMItonic:STXaloof
+ LDAspirf,X:STAparas
+ LDAspirx,X:STAtempa
+ LDAspirc,X:STAtempx
+ LDAspiry,X:STAtempy
+ LDAspird,X:STAtempz
+ JSROPENS:BCSwater:JSRPLACE
+.water LDXaloof
+.tonic DEX:BPLvodka:RTS
+.D
+ LDA#19:JSROSB
+ JSRMONST
+ LDX#3
+.jiger
+ STXaloof
+ LDAanoth,X:BMInegat:BNEtiger
+ LDAbornm,X:BEQalive
+ DECbornm,X:BNEtiger
+.alive
+ LDAmonsc,X:BNEammun
+ LDArandy:AND#1
+ BNEslide:TAY
+ LDAreptx:CMPxcoor,X:BCSchock
+ INY:BNEchock
+.slide
+ LDY#3
+ LDArepty:CMPycoor,X:BCSchock
+ DEY
+.chock
+ STYdirec,X
+ LDAycoor,X:CLC:ADCyadin,Y:PHA
+ LDAxcoor,X:CLC:ADCxadin,Y
+ TAX:PLA:JSRGBYTE:LDXaloof
+ CMP#2:BEQammun
+ CMP#3:BEQammun
+ CMP#6:BEQammun
+ CMP#30:BNEtiger
+ INCdeath
+.ammun
+ INCmonsc,X:LDAmonsc,X
+ AND#3:STAmonsc,X:BNEtiger
+ JSRADDEM
+.tiger
+ JSRSTEIN
+ DECmonsf,X:BNEnegat
+ LDA#3:STAmonsf,X
+ LDAframc,X:EOR#3:STAframc,X
+.negat
+ DEX:BPLjiger
+ JSRMONST
+ JSRSPIRT
+ LDX#7
+.wines
+ LDAspirp,X:BMIbeers
+ STXaloof
+ LDAreptx:CMPspirx,X:BNEenter
+ LDArepty:CMPspiry,X:BNEenter
+ INCdeath
+.enter
+ LDAspirc,X:BNEflash
+ JSRSIDES
+ JSRFRONT
+ JSRFRONT
+.flash
+ DECcount,X:BNEnofla
+ LDA#3:STAcount,X
+ LDAspirf,X:EOR#63:STAspirf,X
+.nofla
+ INCspirc,X:LDAspirc,X:AND#3
+ STAspirc,X:BNEbeers
+ LDYspird,X
+ LDAspirx,X:CLC:ADCxadin,Y
+ STAspirx,X
+ LDAspiry,X:CLC:ADCyadin,Y
+ STAspiry,X
+.beers
+ DEX:BPLwines
+ JMPSPIRT
+.xadin
+ EQUB1:EQUB&FF
+.yadin
+ EQUB0:EQUB0:EQUB&FF:EQUB1
+.xdash
+ EQUB0:EQUB0
+.ydash
+ EQUB&FF:EQUB1:EQUB0:EQUB0
+.sides
+ EQUB2:EQUB3:EQUB1:EQUB0
+.SIDES
+ LDAspirp,X:BMIsiout
+ LDYspird,X
+ LDAspiry,X:CLC:ADCydash,Y
+ STApages+1
+ LDAspirx,X:CLC:ADCxdash,Y
+ STApages
+ TAX:LDApages+1:JSRGBYTE:LDXaloof
+ CMP#2:BEQforwd
+ CMP#3:BEQforwd
+ CMP#6:BEQforwd
+ CMP#23:BEQcages
+ CMP#30:BNEsiout
+.deded
+ INCdeath:RTS
+.forwd
+ LDYspird,X:LDAsides,Y:STAspird,X
+.siout RTS
+.cages
+ DECspirp,X
+ LDXpages:LDYpages+1
+ LDA#1:STAparas:JSRWBYTE
+ LDApages:STAtempa
+ LDApages+1:STAtempy
+ LDA#0:STAtempx:STAtempz
+ JSROPENS:BCSpling
+ JSRBLOBS
+.pling
+ LDA#3:JMPNOISE
+.holly PLA:PLA:JMPbeers
+.FRONT
+ LDAspirp,X:BMIfront
+ LDYspird,X
+ LDAspiry,X:CLC:ADCyadin,Y
+ STApages+1
+ LDAspirx,X:CLC:ADCxadin,Y
+ STApages
+ TAX:LDApages+1:JSRGBYTE:LDXaloof
+ CMP#2:BEQfront
+ CMP#3:BEQfront
+ CMP#6:BEQfront
+ CMP#23:BEQcages
+ CMP#30:BNEchang:BEQdeded
+.chang
+ LDYspird,X:LDAinsid,Y:STAspird,X
+.front RTS
+.STEIN
+ LDAreptx:EORxcoor,X:BNEspots
+ LDArepty:EORycoor,X:BNEspots
+ INCdeath
+.spots
+ LDYycoor,X:LDAxcoor,X
+ TAX:TYA:JSRGBYTE
+ LDX#2
+.steel
+ CMPhamer,X:BEQkilit
+ DEX:BPLsteel
+ BMIstink
+.kilit
+ LDXaloof
+ DECanoth,X
+ LDA#5:JSRNOISE
+ DECmonst
+ LDAscore:CLC:ADC#20:STAscore
+ BCCstink:INCscore+1
+.stink
+ LDXaloof:RTS
+.ADDEM
+ LDYdirec,X
+ LDAxcoor,X:CLC:ADCxadin,Y
+ STAxcoor,X
+ LDAycoor,X:CLC:ADCyadin,Y
+ STAycoor,X:RTS
+.notes
+ EQUB96
+ \\:EQUB10
+ EQUB108
+ \\:EQUB5
+ EQUB96
+ \\:EQUB10
+ EQUB96
+ \\:EQUB10
+ EQUB108
+ \\:EQUB5
+ EQUB96
+ \\:EQUB10
+ EQUB100
+ \\:EQUB5
+ EQUB108
+ \\:EQUB5
+ EQUB100
+ \\:EQUB5
+ EQUB88
+ \\:EQUB10
+ EQUB96
+ \\:EQUB5
+ EQUB100
+ \\:EQUB5
+ EQUB96
+ \\:EQUB5
+ EQUB80
+ \\:EQUB10
+.F
+ LDA#((F-notes)/2)-1:STAtempa
+.jingl
+ LDA#128:LDX#&FA:JSROSB
+ CPX#4:BCCjingl
+ LDA#((F-notes)/2)-1:SBCtempa
+ ASLA:TAX
+ LDAnotes,X:ADC#24:STAmelod+4
+ LDAnotes+1,X:LSRA:STAmelod+6
+ LDX#melod AND255:LDY#melod/256
+ LDAtunes:BNEbuttr
+ LDA#7:JSROSO
+.buttr
+ DECtempa:BPLjingl:RTS
+.melod
+ EQUW1:EQUW1:EQUW0:EQUW0
+.BARS1
+ EQUBc ORoct4:EQUB&FF
+ EQUBe ORoct4:EQUBd ORoct4
+ EQUBe ORoct4:EQUBd ORoct4
+ EQUBc ORoct4:EQUB&FF
+ EQUB&FF:EQUB&FF
+ EQUBe ORoct4:EQUBd ORoct4
+ EQUBe ORoct4:EQUBf ORoct4
+ EQUBg ORoct4:EQUB&FF
+ \
+ EQUBg ORoct4:EQUB&FF
+ EQUBc ORoct2:EQUB&FF
+ EQUBc ORoct3:EQUB&FF
+ EQUBg ORoct2:EQUB&FF
+ EQUBc ORoct3:EQUB&FF
+ EQUBc ORoct2:EQUB&FF
+ EQUBc ORoct3:EQUB&FF
+ EQUBg ORoct2:EQUB&FF
+ EQUBc ORoct3:EQUB&FF
+.BARS2
+ EQUB&FF:EQUB&FF
+ EQUBf` ORoct4:EQUBg ORoct4
+ EQUBa ORoct4:EQUBg ORoct4
+ EQUBf` ORoct4:EQUBg ORoct4
+ EQUBa ORoct4:EQUB&FF
+ EQUB&FF:EQUB&FF
+ EQUB&FF:EQUB&FF
+ EQUB&FF:EQUB&FF
+ \
+ EQUBd OR oct2:EQUB&FF
+ EQUBd OR oct3:EQUB&FF
+ EQUBa OR oct2:EQUB&FF
+ EQUBd OR oct3:EQUB&FF
+ EQUBd OR oct2:EQUB&FF
+ EQUBc OR oct3:EQUB&FF
+ EQUBb OR oct2:EQUB&FF
+ EQUBa OR oct2:EQUB&FF
+.BARS3
+ EQUB&FF:EQUB&FF
+ EQUBb ORoct4:EQUBa ORoct4
+ EQUBg ORoct4:EQUBa ORoct4
+ EQUBg ORoct4:EQUBf ORoct4
+ EQUBe ORoct4:EQUBf ORoct4
+ EQUBe ORoct4:EQUBd ORoct4
+ EQUBe ORoct4:EQUBd ORoct4
+ EQUBc ORoct4:EQUBd ORoct4
+ \
+ EQUBg ORoct2:EQUB&FF
+ EQUBg ORoct3:EQUB&FF
+ EQUBd ORoct2:EQUB&FF
+ EQUBg ORoct3:EQUB&FF
+ EQUBg ORoct2:EQUB&FF
+ EQUBg ORoct3:EQUB&FF
+ EQUBd ORoct2:EQUB&FF
+ EQUBg ORoct3:EQUB&FF
+.BARS4
+ EQUBg ORoct3:EQUBa ORoct3
+ EQUBc ORoct4:EQUBd ORoct4
+ EQUBe ORoct4:EQUBd ORoct4
+ EQUBc ORoct4:EQUBa ORoct3
+ EQUBc ORoct4:EQUB&FF
+ EQUB&FF:EQUB&FF
+ EQUB&FF:EQUB&FF
+ EQUB&FF:EQUB&FF
+ \
+ EQUBc ORoct2:EQUB&FF
+ EQUBc ORoct3:EQUB&FF
+ EQUBg ORoct2:EQUB&FF
+ EQUBc ORoct3:EQUB&FF
+ EQUBc ORoct2:EQUB&FF
+ EQUBg ORoct2:EQUB&FF
+ EQUBa ORoct2:EQUB&FF
+ EQUBb ORoct2:EQUB&FF
+.BARS7
+ EQUBg ORoct4:EQUBb ORoct4
+ EQUBf ORoct4:EQUBa ORoct4
+ EQUBe ORoct4:EQUBg ORoct4
+ EQUBd ORoct4:EQUBf ORoct4
+ EQUBc ORoct4:EQUBe ORoct4
+ EQUBb ORoct3:EQUBd ORoct4
+ EQUBa ORoct3:EQUBc ORoct4
+ EQUBg ORoct3:EQUBb ORoct3
+ \
+ EQUBg ORoct2:EQUB&FF
+ EQUBg ORoct3:EQUB&FF
+ EQUBd ORoct2:EQUBe ORoct2
+ EQUBf ORoct2:EQUBg ORoct2
+ EQUBf ORoct2:EQUB&FF
+ EQUBf ORoct3:EQUB&FF
+ EQUBd ORoct2:EQUBe ORoct2
+ EQUBf ORoct2:EQUBd ORoct2
+.BARS8
+ EQUBe ORoct4:EQUBd ORoct4
+ EQUBc ORoct4:EQUBd ORoct4
+ EQUBg ORoct3:EQUBa ORoct3
+ EQUBc ORoct4:EQUBd ORoct4
+ EQUBc ORoct4:EQUB&FF
+ EQUBb ORoct3:EQUBc ORoct4
+ EQUBd ORoct4:EQUBb ORoct3
+ EQUBa ORoct3:EQUBg ORoct3
+ \
+ EQUBe ORoct2:EQUB&FF
+ EQUBe ORoct3:EQUB&FF
+ EQUBd ORoct2:EQUB&FF
+ EQUBd ORoct3:EQUB&FF
+ EQUBc ORoct2:EQUB&FF
+ EQUBg ORoct2:EQUBa ORoct2
+ EQUBb ORoct2:EQUBg ORoct2
+ EQUBf ORoct2:EQUBe ORoct2
+.hamer
+ EQUB0:EQUB24:EQUB26
+.insid
+ EQUB3:EQUB2:EQUB0:EQUB1

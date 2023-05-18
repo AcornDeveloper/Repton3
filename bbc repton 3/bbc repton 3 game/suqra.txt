@@ -1,0 +1,74 @@
+; SUQRA
+
+ pages=&60
+ tempa=&70
+ tempx=&71
+ tempy=&72
+ tempz=&73
+ indir=&74
+ start=&7B
+ NOISE=&1703
+ OSW=&FFEE
+ OSO=&FFF1
+ OSB=&FFF4
+
+ P%=&2300
+
+.SUQRA
+ LDA#6:JSRNOISE
+ LDA#15:STApages
+ LDA#1:STApages+1
+.capit
+ LDApages:STAtempx:STAtempy
+ LDA#19:JSROSB
+ LDX#3:STXpages+2
+.suqra
+ JSRSIDES
+ DECpages+2:BPLsuqra
+ LDApages:STAtempx:STAtempy
+ LDA#1:JSRBLOCK
+ LDApages:CLC:ADCpages+1:STAtempx
+ LDA#3:JSRBLOCK
+ INCpages+1:INCpages+1
+ LDAtempx:STAtempy
+ LDA#7:JSRBLOCK
+ LDApages:STAtempx
+ LDA#6:JSRBLOCK
+ DECpages:BPLcapit:RTS
+.SIDES
+ LDXpages+1
+.lines
+ TXA:PHA
+ LDYpages+2:LDAstrip,Y:STAtempa
+ JSRBLOCK
+ LDXpages+2
+ LDAtempx:CLC:ADCxdire,X:STAtempx
+ LDAtempy:CLC:ADCydire,X:STAtempy
+ PLA:TAX:DEX:BNElines:RTS
+.xdire
+ EQUB0:EQUB-1:EQUB0:EQUB1
+.ydire
+ EQUB-1:EQUB0:EQUB1:EQUB0
+.strip
+ EQUB4:EQUB8:EQUB5:EQUB2
+.block
+ EQUD&F7F7F0F0:EQUD&C6C6C7C7
+ EQUD&FFFFF0F0:EQUD&F0F
+ EQUD&FEFEF0F0:EQUD&36363E3E
+ EQUD&C6C6C6C6:EQUD&C6C6C6C6
+ EQUD&36363636:EQUD&36363636
+ EQUD&C7C7C6C6:EQUD&F0F0F7F7
+ EQUD&3E3E3636:EQUD&F0F0FEFE
+ EQUD&F0F0000:EQUD&F0F0FFFF
+.BLOCK
+ PHA
+ LDAtempx:ASLA:ASLA:ASLA
+ CLC:ADCstart:STAindir
+ LDAtempy:ADCstart+1
+ BPLposit:SEC:SBC#&20
+.posit
+ STAindir+1:LDY#7
+ PLA:ASLA:ASLA:ASLA:TAX
+.seven
+ LDAblock-1,X:STA(indir),Y
+ DEX:DEY:BPLseven:RTS

@@ -1,0 +1,130 @@
+   10 REM MAKER
+   20 REM New screen rearranger
+   30 REM Written 26 July 1986
+   40 REM Version 1.04
+   50 REM
+   60 *TV255
+   70 *DIR R
+   80 *LOAD DATA0 31E0
+   90 ON ERROR GOTO100
+  100 MODE7
+  110 REPEAT
+  120 PROCsetup
+  130 REPEAT
+  140 *FX15
+  150 keypr=GET
+  160 UNTIL keypr>48 AND keypr<53
+  170 CLS
+  180 *FX15
+  190 IFkeypr=49:PROCdetal
+  200 IFkeypr=50:PROCloads
+  210 IFkeypr=51:PROCsaves
+  220 IFkeypr=52:PROCcatal
+  230 UNTIL0
+  240 END
+  250 DEFPROCsetup
+  260 CLS
+  270 VDU23,1,0;0;0;0;
+  280 PRINTTAB(14,2)"DATA MAKER"
+  290 PRINTTAB(14,3)"=========="
+  300 PRINTTAB(4,6)"1. Transfer screen"
+  310 PRINTTAB(4,8)"2. Load data"
+  320 PRINTTAB(4,10)"3. Save data"
+  330 PRINTTAB(4,12)"4. Catalogue disc"
+  340 PRINTTAB(10,16)"Make your choice now"
+  350 MIROR=&2800
+  360 WORDS=&31E0
+  370 SANDS=&3220
+  380 BLOCK=&3230
+  390 WARPS=&3240
+  400 FISIC=&32C0
+  410 BASES=&32E0
+  420 ENDPROC
+  430 DEFPROCloads
+  440 PRINTTAB(12,2)"LOAD DATA SET"
+  450 PRINTTAB(12,3)"============="
+  460 PRINTTAB(4,6)"Input name of data set in"
+  470 PRINTTAB(4,7)"which screen resides."
+  480 PRINTTAB(7,9)">=";
+  490 INPUT" "files$
+  500 OSCLI"*LOAD "+files$+" 59E0"
+  510 ENDPROC
+  520 DEFPROCsaves
+  530 PRINTTAB(12,2)"SAVE DATA SET"
+  540 PRINTTAB(12,3)"============="
+  550 PRINTTAB(4,6)"Input name of file you wish"
+  560 PRINTTAB(4,7)"to save under."
+  570 PRINTTAB(7,9)">=";
+  580 INPUT" "files$
+  590 *LOAD R.SPRIT
+  600 OSCLI"*SAVE "+files$+" 31E0 5800 0000"
+  610 ENDPROC
+  620 DEFPROCcatal
+  630 PRINTTAB(10,2)"DISC CATALOGUE"
+  640 PRINTTAB(10,3)"=============="
+  650 PRINTTAB(0,4)
+  660 *CAT
+  670 PRINTTAB(7,20)"Press a key to continue."
+  680 REPEAT
+  690 UNTILINKEY(-129)<>-1
+  700 ENDPROC
+  710 DEFPROCdetal
+  720 CLS
+  730 PRINTTAB(10,2)"TRANSFER DETAILS"
+  740 PRINTTAB(10,3)"================"
+  750 PRINTTAB(4,6)"Which screen from (A-H)"
+  760 REPEAT
+  770 PRINTTAB(7,8)"=>  "CHR$127;CHR$127;
+  780 screen=GET
+  790 UNTIL screen>64 AND screen<73
+  800 PRINTCHR$screen
+  810 PRINTTAB(4,10)"Destination screen (A-H)"
+  820 REPEAT
+  830 PRINTTAB(7,12)"=>  "CHR$127;CHR$127;
+  840 target=GET
+  850 UNTIL target>64 AND target<73
+  860 PRINTCHR$target
+  870 PRINTTAB(4,14)"Is this correct? (Y/N)"
+  880 REPEAT
+  890 query$=GET$
+  900 UNTILquery$="Y" OR query$="N"
+  910 IFquery$="N":ENDPROC
+  920 REM screen=orig 
+  930 PRINTTAB(7,18)"Transferring screen..."
+  940 screen=screen-65
+  950 target=target-65
+  960 REM Transfer password
+  970 X=(target*8)+WORDS
+  980 Y=(screen*8)+WORDS+MIROR
+  990 !X=!Y
+ 1000 X!4=Y!4
+ 1010 REM Transfer time limit
+ 1020 X=(target*2)+SANDS
+ 1030 Y=(screen*2)+SANDS+MIROR
+ 1040 ?X=?Y
+ 1050 X?1=Y?1
+ 1060 REM Misc. data block
+ 1070 X=(target*2)+BLOCK
+ 1080 Y=(screen*2)+BLOCK+MIROR
+ 1090 ?X=?Y
+ 1100 X?1=Y?1
+ 1110 REM Transporter data
+ 1120 X=(target*16)+WARPS
+ 1130 Y=(screen*16)+WARPS+MIROR
+ 1140 FOR J=0 TO 15
+ 1150 X?J=Y?J
+ 1160 NEXT
+ 1170 REM Physical colours
+ 1180 X=(target*4)+FISIC
+ 1190 Y=(screen*4)+FISIC+MIROR
+ 1200 !X=!Y
+ 1210 REM Compressed screen data
+ 1220 X=(target*420)+BASES
+ 1230 Y=(screen*420)+BASES+MIROR
+ 1240 FOR J=0 TO 419
+ 1250 X?J=Y?J
+ 1260 NEXT
+ 1270 FOR J=0 TO 3000
+ 1280 NEXT
+ 1290 ENDPROC
+

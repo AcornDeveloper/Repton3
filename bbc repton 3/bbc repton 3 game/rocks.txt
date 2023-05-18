@@ -1,0 +1,383 @@
+; ROCKS
+
+ userp=0
+ monst=&2
+ index=&8
+ xcoor=&10
+ ycoor=&14
+ anoth=&24
+ quart=&6C
+ kicks=&6F
+ pages=&60
+ tempa=&70
+ tempx=&71
+ tempy=&72
+ tempz=&73
+ indir=&74
+ tunes=&76
+ death=&78
+ worka=&7A
+ score=&80
+ tiara=&82
+ paras=&87
+ repty=&96
+ MONST=&407
+ BARS1=&735
+ BARS2=&757
+ BARS3=&777
+ BARS4=&797
+ BARS5=&735
+ BARS6=&757
+ BARS7=&7B7
+ BARS8=&7D7
+ TYLER=&1503
+ INDIR=&1509
+ DECIM=&1700
+ NOISE=&1703
+ METAL=&1706
+ PASTL=&1715
+ COLOF=&1913
+ ROTAT=&1919
+ SIGNS=&191C
+ DELAY=&1CA3
+ GBYTE=&1CA6
+ WBYTE=&1CA9
+ BLOBS=&2000
+ PLACE=&2003
+ OPENS=&27A3
+ WORDS=&31E0
+ SHELA=&FE00
+ OSW=&FFEE
+ OSO=&FFF1
+ OSB=&FFF4
+
+ P%=&2960
+
+.ROCKS JMPA
+.CONGR JMPB
+.MUSIC JMPC
+.DIABL JMPD
+.ENABL JMPE
+.CLOCK JMPF
+.FINAL JMPG
+.A
+ LDX#0:STXpages+4
+ LDArepty:STApages+1
+ JSRlines
+ LDYrepty:DEY:DEY:STYpages+1
+ JSRlines
+ LDAkicks:BNEDUMMY
+ LDYrepty:DEY:STYpages+1
+ JSRlines
+ DECquart:LDAquart:AND#3:TAX
+ LDApiece,X:STApages+1
+ LDX#5:STXpages+4
+.lines
+ LDA#27:STApages
+.cross
+ LDApages+1:LDXpages:JSRGBYTE
+ BEQdrops
+ CMP#24:BNEbashm
+.drops
+ STAworka:JSRCLOBR
+ LDXpages:LDYpages+1
+ INY:TYA:JSRGBYTE
+ TAX:LDAreson,X:ASLA:TAX
+ LDA#resum/256:PHA
+ LDA#(resum AND255)-1:PHA
+ LDApolyc+1,X:PHA
+ LDApolyc,X:PHA
+.DUMMY RTS
+.resum
+ JSRCLOBR
+.bashm
+ DECpages:BPLcross
+ INCpages+1
+ LDYrepty:CPYpages+1
+ BNErocks:INCpages+1
+.rocks
+ DECpages+4:BPLlines
+.retun RTS
+.piece
+ EQUB0:EQUB6:EQUB12:EQUB18
+.polyc
+ EQUWDUMMY-1:EQUWFALIN-1
+ EQUWLANDR-1:EQUWFLEFT-1
+ EQUWFRIGH-1
+.reson
+ EQUB2:EQUB2:EQUB0:EQUB0
+ EQUB2:EQUB2:EQUB1:EQUB0
+ EQUB0:EQUB0:EQUB0:EQUB0
+ EQUB3:EQUB4:EQUB0:EQUB0
+ EQUB0:EQUB3:EQUB4:EQUB0
+ EQUB0:EQUB0:EQUB0:EQUB0
+ EQUB2:EQUB2:EQUB0:EQUB2
+ EQUB0:EQUB2:EQUB0:EQUB0
+ EQUB0:EQUB0:EQUB0:EQUB0
+ EQUB0:EQUB0:EQUB0:EQUB0
+ EQUB0:EQUB0:EQUB0:EQUB0
+ EQUB0:EQUB0:EQUB0:EQUB0
+.FALIN
+ JSRBOULD
+ LDXpages:LDYpages+1
+ INY:JSRSTONE
+ LDXpages:LDYpages+1:INY:INY:TYA
+ JSRGBYTE:CMP#30:BEQbonks
+ RTS
+.LANDR
+ LDAkicks:BNEnears
+ LDXpages:DEX:LDApages+1:JSRGBYTE
+ CMP#6:BNEFRIGH:LDXpages:DEX
+ LDYpages+1:INY:TYA:JSRGBYTE
+ CMP#6:BNEFRIGH
+ JSRBOULD
+ LDXpages:DEX
+ LDYpages+1:INY:JSRSTONE
+ LDXpages:DEX:LDYpages+1
+ INY:INY:TYA
+ JSRGBYTE:CMP#30:BEQbonks
+ INCpages+1:INCpages+1:RTS
+.bonks INCdeath:.nears RTS
+.FLEFT
+ LDXpages:DEX:LDApages+1:JSRGBYTE
+ CMP#6:BNEnears:LDXpages:DEX
+ LDYpages+1:INY:TYA:JSRGBYTE
+ CMP#6:BNEnears
+ JSRBOULD
+ LDXpages:DEX
+ LDYpages+1:INY:JSRSTONE
+ LDXpages:DEX:LDYpages+1
+ INY:INY:TYA
+ JSRGBYTE:CMP#30:BEQbonks
+ INCpages+1:INCpages+1:RTS
+.FRIGH
+ LDXpages:INX:LDApages+1:JSRGBYTE
+ CMP#6:BNEnears:LDXpages:INX
+ LDYpages+1:INY:TYA:JSRGBYTE
+ CMP#6:BNEnears
+ JSRBOULD
+ LDXpages:INX
+ LDYpages+1:INY:JSRSTONE
+ LDXpages:INX:LDYpages+1
+ INY:INY:TYA
+ JSRGBYTE:CMP#30:BEQbonks
+ INCpages+1:INCpages+1
+.nifes RTS
+.STONE
+ STXpages+2:STYpages+3
+ LDAworka:STAparas:JSRWBYTE
+ LDApages+2:STAtempa
+ LDApages+3:STAtempy
+ LDA#0:STAtempx:STAtempz
+ JSROPENS:BCShatch
+ JSRPLACE
+ LDA#6:STAparas
+ JSRPLACE
+.hatch
+ LDAworka:CMP#24:BNEnifes
+ LDXpages+2:LDYpages+3
+ INY:TYA:JSRGBYTE
+ CMP#6:BEQnifes
+ LDA#47:STAparas
+ LDXpages+2:LDYpages+3:JSRWBYTE
+ LDApages+2:STAtempa
+ LDApages+3:STAtempy
+ LDA#0:STAtempx:STAtempz
+ JSROPENS
+ BCSdepth:JSRPLACE
+ LDA#24:STAparas:JSRPLACE
+.depth
+ LDX#3
+.lucid
+ LDAanoth,X:BPLstein
+ LDA#32:STAanoth,X
+ LDApages+2:STAxcoor,X
+ LDApages+3:STAycoor,X
+ LDA#4:JMPNOISE
+.stein
+ DEX:BPLlucid:RTS
+.BOULD
+ LDA#1:JSRNOISE
+ LDA#6:STAparas:LDXpages
+ LDYpages+1:JSRWBYTE
+ LDApages:STAtempa
+ LDApages+1:STAtempy
+ LDA#0:STAtempx:STAtempz
+ JSROPENS
+ BCSother:JSRPLACE
+ LDAworka:STAparas
+ JMPPLACE
+.CLOBR
+ LDX#3
+.clobr
+ LDAanoth,X:BNEnomos
+ LDAxcoor,X:CMPpages:BNEnomos
+ LDAycoor,X:CMPpages+1:BNEnomos
+ LDA#20:CLC:ADCscore:STAscore
+ LDA#0:ADCscore+1:STAscore+1
+ DECmonst
+ TXA:PHA
+ LDA#5:JSRNOISE
+ JSRMONST
+ PLA:PHA:TAX:DECanoth,X
+ JSRMONST:PLA:TAX
+.nomos
+ DEX:BPLclobr
+.other RTS
+.finis
+ EQUW&11F:EQUB14
+ EQUS"Amazing,you have completed all"
+ EQUW&11F:EQUB16
+ EQUS"the screens."
+ EQUW&11F:EQUB18
+ EQUS"To enter the competition,make a"
+ EQUW&11F:EQUB20
+ EQUS"note of the number below and"
+ EQUW&11F:EQUB22
+ EQUS"which set of screens you used."
+ EQUW&211
+ EQUW&71F:EQUB25
+ EQUS"COMPETITION NUMBER"
+ EQUW&B1F:EQUB27
+.nofin
+ EQUW&31F:EQUB14
+ EQUS"Now try and do that from the"
+ EQUW&21F:EQUB16
+ EQUS"start without using any of the"
+ EQUW&31F:EQUB18
+ EQUS"passwords and picking up all"
+ EQUW&81F:EQUB20
+ EQUS"the eight crowns."
+.retun
+ EQUW&111
+ EQUW&51F:EQUB30
+ EQUS"Press       to continue"
+ EQUW&61F:EQUB11
+ EQUS"HAS BEEN COMPLETED ''"
+ EQUW&211
+ EQUW&B1F:EQUB30
+ EQUS"SPACE"
+ EQUW&311
+.B
+ JSRTYLER
+ JSRCOLOF
+ JSRSIGNS
+ LDX#retun AND255:LDY#retun/256
+ LDA#B-retun:JSRINDIR
+ LDAtiara:CMP#8:BCCnonum
+ LDAuserp:BNEnonum
+ LDX#finis AND255:LDY#finis/256
+ LDA#nofin-finis:JSRINDIR
+ LDAscore:STAtempa
+ LDAscore+1:STAtempx
+ LDA#WORDS AND255:STAindir
+ LDA#WORDS/256:STAindir+1
+ LDA#&FF:STAtempy
+ LDA#&EE:STAtempz
+ LDY#0
+.chexs
+ LDA(indir),Y:EORtempy:STAtempy
+ EORtempz:STAtempz
+ INY:BNEchexs
+ INCindir
+ LDAindir:CMP#&40:BCCchexs
+ LDX#0
+.volum
+ LDY#32:LDA#0
+.shape
+ ASLtempa:ROLtempx
+ ROLtempy:ROLtempz
+ ROLA:CMP#10:BCCslipy
+ SBC#10:INCtempa
+.slipy DEY:BNEshape
+ PHA:INX:LDAtempa:ORAtempx
+ ORAtempy:ORAtempz
+ BNEvolum
+.words
+ PLA:CLC:ADC#48:JSROSW:DEX:BNEwords
+ JMPwaits
+.nonum
+ LDX#nofin AND255:LDY#nofin/256
+ LDA#retun-nofin:JSRINDIR
+.waits
+ JSRPASTL
+.press
+ LDX#&9D:JSRMETAL:BPLpress
+ JMPROTAT
+.barit EQUB0
+.barrs EQUB0
+.notes EQUB0
+.black
+ EQUWBARS1
+ EQUWBARS2
+ EQUWBARS3
+ EQUWBARS4
+ EQUWBARS5
+ EQUWBARS6
+ EQUWBARS7
+ EQUWBARS8
+.C
+ LDAbarit:BNEdiabl
+ LDAtunes:BNEsilen
+ LDAbarrs:ASLA:TAX
+ LDAblack,X:STAindex
+ LDAblack+1,X:STAindex+1
+ LDYnotes:LDA(index),Y
+ JSRDECOD:STAchan2+4
+ LDAnotes:CLC:ADC#16:TAY
+ LDA(index),Y
+ JSRDECOD:STAchan3+4
+ LDAchan2+4:CMP#&FF:BEQresto
+ LDX#chan2 AND255:LDY#chan2/256
+ LDA#7:JSROSO
+.resto
+ LDAchan3+4:CMP#&FF:BEQsilen
+ LDX#chan3 AND255:LDY#chan3/256
+ LDA#7:JSROSO
+.silen
+ INCnotes:LDAnotes
+ CMP#16:BCCdiabl
+ LDA#0:STAnotes
+ INCbarrs:LDAbarrs
+ AND#7:STAbarrs
+.diabl RTS
+.D
+ LDA#1:STAbarit:RTS
+.E
+ LDA#0:STAbarit:RTS
+.DECOD
+ PHA:LSRA:LSRA:LSRA:LSRA:TAX
+ PLA:AND#&F:TAY:LDAoctav,Y
+ CMP#&FF:BEQdiabl
+ CPX#0:BEQdiabl
+.addup
+ CLC:ADC#48:DEX:BNEaddup:RTS
+.chan2
+ EQUW&12:EQUW2:EQUW0:EQUW1
+.chan3
+ EQUW&13:EQUW2:EQUW0:EQUW1
+.octav
+ EQUB49:EQUB45:EQUB41:EQUB37
+ EQUB33:EQUB29:EQUB25:EQUB21
+ EQUB17:EQUB13:EQUB9:EQUB5
+ EQUB&FF:EQUB&FF:EQUB&FF:EQUB&FF
+.F
+ LDA#&E:STASHELA+&66
+ LDA#&27:STASHELA+&67
+ STASHELA+&65
+ LDA#&C0:STASHELA+&6E
+ RTS
+.final
+ EQUW&111
+ EQUW&91F:EQUB15
+ EQUS"SCORE :"
+.G
+ JSRTYLER
+ JSRPASTL
+ LDX#final AND255:LDY#final/256
+ LDA#G-final:JSRINDIR
+ LDAscore:STAtempa
+ LDAscore+1:STAtempx
+ LDX#17:LDY#15:JSRDECIM
+ LDX#100:JSRDELAY
+ JMPROTAT

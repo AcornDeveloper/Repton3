@@ -1,0 +1,319 @@
+; POINT
+
+ pages=&60
+ tempa=&70
+ tempx=&71
+ tempy=&72
+ tempz=&73
+ indir=&74
+ sprix=&76
+ spriy=&77
+ count=&78
+ bases=&79
+ secon=&7B
+ topps=&7D
+ botts=&7E
+ keeys=&7F
+ choic=&80
+ magni=&82
+ alter=&83
+ analg=&84
+ vectr=&91
+ marcx=&9A
+ marcy=&9B
+ block=&B8
+ IRQ1V=&204
+ COLOR=&1553
+ INDIR=&1556
+ PAINT=&1559
+ WINDO=&155C
+ METAL=&1568
+ color=&1580
+ palet=&1584
+ SHELA=&FE00
+ OSW=&FFEE
+ OSO=&FFF1
+ OSB=&FFF4
+ P%=&1A80
+.ti320
+ EQUW&5800:EQUW&5940:EQUW&5A80
+ EQUW&5BC0:EQUW&5D00:EQUW&5E40
+ EQUW&5F80:EQUW&60C0:EQUW&6200
+ EQUW&6340:EQUW&6480:EQUW&65C0
+ EQUW&6700:EQUW&6840:EQUW&6980
+ EQUW&6AC0:EQUW&6C00:EQUW&6D40
+ EQUW&6E80:EQUW&6FC0:EQUW&7100
+ EQUW&7240:EQUW&7380:EQUW&74C0
+ EQUW&7600:EQUW&7740:EQUW&7880
+ EQUW&79C0:EQUW&7B00:EQUW&7C40
+ EQUW&7D80:EQUW&7EC0
+.ARRON JMPA
+.AROFF JMPB
+.ARSET JMPC
+.PERIP JMPD
+.ARRGO JMPE
+.STORE JMPG
+.INRUP JMPH
+.RELES JMPI
+.ICONS JMPJ
+.PALET JMPK
+.RESTR JMPL
+.FILES JMPM
+.CHOSE JMPN
+.PRESS JMPO
+.I
+ JSRPERIP:JSRARRGO:LDAchoic:BNEI
+ RTS
+.VECTR
+ TXA:PHA:LDASHELA+&6D:BPLactiv:TAX:AND#&18:BNEmours
+.activ PLA:TAX:.intrv JMPintrv
+.mours LDXkeeys:CPX#2:BEQactiv:LDXSHELA+&60
+ PHA:AND#&10:BEQmnext:TXA:AND#8:BEQmdecx
+ INCmarcx:LDAmarcx:CMP#160:BCCmnext:DECmarcx:BNEmnext
+.mdecx LDAmarcx:BEQmnext:DECmarcx
+.mnext PLA:AND#8:BEQrbout:TXA:AND#&10:BEQmdecy
+ INCmarcy:BNErbout:DECmarcy:BEQrbout
+.mdecy LDAmarcy:BEQrbout:DECmarcy
+.rbout PLA:TAX:LDA&FC:RTI
+.H
+ SEI
+ LDAIRQ1V+1:CMP#VECTR/256:BEQleavs
+ STAintrv+2:LDAIRQ1V:STAintrv+1
+ LDA#VECTR AND255:STAIRQ1V
+ LDA#VECTR/256:STAIRQ1V+1
+ LDA#&D8:STASHELA+&6E
+ LDA#0:STASHELA+&62
+.leavs CLI:RTS
+.G
+ JSRTRANS
+ LDApages:STAareas:LDApages+1:CLC:ADCpages+3:STAareas+1
+ LDApages:CLC:ADCpages+2:STAareas+2:LDApages+1:STAareas+3
+.rowds JSRCACEL
+.texts LDX#16:.chars LDYindir:LDA(tempa),Y:LDYindir+1:STA(tempy),Y
+ INCindir:INCindir+1:BNEaddup:INCtempz
+.addup DEX:BNEchars:DECcount:BPLtexts
+ INCpages+1:DECpages+3:BPLrowds
+ LDX#clear AND255:LDY#clear/256
+ LDA#L-clear:JMPINDIR
+.clear
+ EQUB28
+.areas EQUW0:EQUW0
+ EQUW&8211:EQUW&11
+ EQUB12:EQUB26
+.L
+ JSRTRANS
+.mowds JSRCACEL
+.mexts LDX#16:.mhars LDYindir+1:LDA(tempy),Y:LDYindir:STA(tempa),Y
+ INCindir:INCindir+1:BNEmddup:INCtempz
+.mddup DEX:BNEmhars:DECcount:BPLmexts
+ INCpages+1:DECpages+3:BPLmowds:RTS
+.TRANS STXtempx:STYtempy:LDY#3
+.trans LDA(tempx),Y:STApages,Y:DEY:BPLtrans:INY:STYindir+1
+ LDA#BUFFR AND255:STAtempy:LDA#BUFFR/256:STAtempz:RTS
+.CACEL LDApages:ASLA:ASLA:ASLA:ASLA:ROLtempx:PHA
+ LDApages+1:ASLA:TAX:PLA:CLC:ADCti320,X:STAtempa
+ LDAtempx:AND#1:ADCti320+1,X:STAtempx
+ LDA#0:STAindir:LDApages+2:STAcount:RTS
+.BASES LDAbases:CLC:ADC#8:STAbases:BCCvisit:INCbases+1:.visit RTS
+.SECON LDAsecon:CLC:ADC#8:STAsecon:BCCsores:INCsecon+1:.sores RTS
+.SPRIS JSRcalcsp:LDX#0:.sprits LDY#0:LDAtopps:STAcount
+.satop LDA(bases),Y:STAbytes,X:INX:INY:DECcount:BPLsatop
+ JSRBASES:LDAbotts:BEQmores:STAcount:LDY#0
+.sabot LDA(secon),Y:STAbytes,X:INX:INY:DECcount:BNEsabot
+ JSRSECON:.mores CPX#24:BNEsprits:RTS
+.BOTTL
+ LDA#19:JSROSB
+.B
+ JSRcalcsp:LDX#0:.spritr LDY#0:LDAtopps:STAcount
+.retop LDAbytes,X:STA(bases),Y:INX:INY:DECcount:BPLretop
+ JSRBASES:LDAbotts:BEQquik:STAcount:LDY#0
+.rebot LDAbytes,X:STA(secon),Y:INX:INY:DECcount:BNErebot
+ JSRSECON:.quik CPX#24:BNEspritr:RTS
+.SPRIL JSRcalcsp:LDX#23
+.spritl LDAobjet,X:STAworks,X:LDAmasks,X:STAforks,X:DEX:BPLspritl
+ LDX#20:LDAsprix:CMP#154:BCCbeast
+ LDA#160:SEC:SBCsprix:ASLA:TAX
+.beast STXnexta+1
+ LDAsprix:AND#3:BEQnospi:STAcount:.novof LDX#7
+.right LDAworks,X:TAY:LSRA:ORA#&88
+ STAworks,X:TYA:AND#&11:ASLA:ASLA:ASLA:STAtempa:LDAworks+8,X:TAY:AND#&EE:LSRA
+ ORAtempa:STAworks+8,X:TYA:AND#&11:ASLA:ASLA:ASLA:STAtempa:LDAworks+16,X:AND#&EE:LSRA:ORAtempa:STAworks+16,X
+ LDAforks,X:TAY:AND#&EE:LSRA
+ STAforks,X:TYA:AND#&11:ASLA:ASLA:ASLA:STAtempa:LDAforks+8,X:TAY:AND#&EE:LSRA
+ ORAtempa:STAforks+8,X:TYA:AND#&11:ASLA:ASLA:ASLA:STAtempa:LDAforks+16,X:AND#&EE:LSRA:ORAtempa:STAforks+16,X
+ DEX:BPLright:DECcount:BNEnovof
+.nospi LDX#0:.again LDY#0:LDAtopps:STAcount
+.topbit LDAworks,X:AND(bases),Y:ORAforks,X:STA(bases),Y:INX:INY:DECcount:BPLtopbit
+ JSRBASES:LDAbotts:BEQnexta:STAcount:LDY#0
+.botbit LDAworks,X:AND(secon),Y:ORAforks,X:STA(secon),Y:INX:INY:DECcount:BNEbotbit
+ JSRSECON:.nexta CPX#20:BCCagain:RTS
+.objet
+ EQUD&888888FF:EQUD&FFFFBBAA
+ EQUD&77FF77FF:EQUD&FFBB1133
+ EQUD-1:EQUD-1
+.masks
+ EQUD&888888FF:EQUD&CCBBAA
+ EQUD&44CC44CC:EQUD&44AA1122
+ EQUD0:EQUD0
+.bytes
+ ]
+ P%=P%+24
+ [OPTA%
+.works
+ ]
+ P%=P%+24
+ [OPTA%
+.forks
+ ]
+ P%=P%+24
+ [OPTA%
+.calcsp LDAspriy:EOR#&FF:LSRA:LSRA:AND#&FE:TAX
+ LDAsprix:ASLA:ROLtempz:AND#&F8:CLC:ADCti320,X:STAbases
+ LDAtempz:AND#1:ADCti320+1,X:STAbases+1
+ LDAbases:CLC:ADC#&40:STAsecon:LDAbases+1:ADC#1:STAsecon+1
+ LDAspriy:AND#7:STAtopps:EOR#7:STAbotts:CLC:ADCbases:STAbases:RTS
+.C
+ LDA#128:STAsprix:STAspriy
+.A
+ JSRSPRIS:JMPSPRIL
+.D
+ LDA#0:STAvectr:STAvectr+1:STAchoic
+ LDAkeeys:ASLA:TAX:LDAwhich+1,X:PHA:LDAwhich,X:PHA:.badie RTS
+.which
+ EQUWkeybd-1
+ EQUWjoysk-1
+ EQUWamxse-1
+ EQUWmabal-1
+.joysk LDA#128:LDX#0:JSROSB:TXA:AND#1:STAchoic
+ LDAanalg:BNEacorn
+ LDA#128:LDX#1:JSROSB:CPY#&E0:BCClower:LDX#&FF:LDY#0:JSRaddit:BCCother
+.lower CPY#&20:BCSother:LDX#1:LDY#0:JMPaddit
+.other LDA#128:LDX#2:JSROSB:CPY#&E0:BCCwoler:LDX#0:LDY#1:JMPaddit
+.woler CPY#&20:BCSbadie:LDX#0:LDY#&FF:JMPaddit
+.acorn
+ LDA#128:LDX#1:JSROSB:TYA
+ EOR#&FF
+ SEC:SBC#61:BCSrange:LDA#0
+.range
+ STAvectr
+ LDA#128:LDX#2:JSROSB
+ STYvectr+1:RTS
+.cursr
+ EQUD&97B7BD9E:EQUD&D6C686E6
+.valux EQUW&1FF
+.valuy EQUD&FF010000
+.keybd
+ LDX#&B6:JSRMETAL:BPLsight:STAchoic
+.sight LDA#3:STAtempa:LDYalter
+.ruffs LDXcursr,Y:STYtempy:JSRMETAL:BPLresto
+ LDYtempa:LDAvalux,Y:CLC:ADCvectr:STAvectr
+ LDAvaluy,Y:CLC:ADCvectr+1:STAvectr+1
+.resto LDYtempy:DEY:DECtempa:BPLruffs
+.below
+ LDAspriy:CMP#&40:BCSmarcs
+ ADCvectr+1:ADCvectr+1:EORspriy:BPLmarcs
+ LDA#0:SEC:SBCspriy:LSRA:STAvectr+1:RTS
+.alrig LDA#0:SBCsprix:STAvectr:RTS
+.addit TXA:CLC:ADCvectr:STAvectr
+ TYA:CLC:ADCvectr+1:STAvectr+1:CLC:RTS
+.mabal
+ LDASHELA+&60:AND#7:EOR#7:STAchoic
+.marcs RTS
+.E
+ LDAkeeys:ASLA:TAX
+ LDAperip+1,X:PHA:LDAperip,X:PHA
+.sedge RTS
+.perip
+ EQUWforts-1
+ EQUWnorml-1
+ EQUWrodnt-1
+ EQUWballs-1
+.CORPS
+ LDAsprix:CMP#200:BCCseeds
+ LDA#0:STAsprix
+.seeds
+ LDAsprix:CMP#159:BCCweeds
+ LDA#159:STAsprix
+.weeds RTS
+.norml
+ LDAanalg:BEQforts
+ LDAsprix:CMPvectr:BNEmoved:LDAspriy:CMPvectr+1:BEQsedge
+.moved JSRBOTTL:LDAvectr:STAsprix:LDAvectr+1:STAspriy
+ JSRCORPS:JMPARRON
+.forts
+ LDAvectr:ORAvectr+1:BEQzeros
+ LDAmagni:CMP#24:BCCnofas
+ LDAvectr:ASLvectr:CLC:ADCvectr
+ STAvectr
+ LDAvectr+1:ASLvectr+1:ASLvectr+1
+.nofas
+ JSRBOTTL
+ JSRYCHEX
+ JSRCORPS
+ JMPARRON
+.zeros
+ LDA#0:STAmagni:RTS
+.ASONE
+ INCmagni
+ LDAsprix:CLC:ADCvectr:STAsprix
+ LDAspriy:CLC:ADCvectr+1:RTS
+.YCHEX
+ LDAvectr+1:BPLupmov
+ LDAspriy:BPLminus
+ JSRASONE:STAspriy:RTS
+.minus
+ JSRASONE
+ TAY:BPLychex
+ LDA#0:STAspriy:RTS
+.upmov
+ JSRASONE:BCCychex:LDA#255
+.ychex STAspriy:RTS
+.rodnt LDAblock:LSRblock+1:RORA:LSRblock+1:RORA:LSRblock+1:RORA:STAvectr
+ LDAblock+2:LSRblock+3:RORA:LSRblock+3:RORA:STAvectr+1
+ CMPspriy:BNEplaqu:LDAvectr:CMPsprix:BEQedges:.plaqu JMPmoved
+.amxse LDA#64:LDX#block AND255:LDY#block/256:JSROSO
+ LDAblock+6:AND#&E0:CMP#&E0:BEQedges:STAchoic:.edges RTS
+.balls
+ LDAsprix:CMPmarcx:BNEmoves:LDAspriy:CMPmarcy:BEQedges
+.moves JSRBOTTL:LDAmarcx:STAsprix:LDAmarcy:STAspriy
+ JSRCORPS:JMPARRON
+.J
+ LDAsprix:CMP#124:BCCnotin
+ CMP#157:BCSnotin:TAX
+ LDAspriy:CMP#144:BCCnotin
+ CMP#241:BCSnotin
+ SEC:SBC#144:LSRA:LSRA:LSRA:AND#&FE
+ STAtempa:CPX#140:ROLA:AND#1
+ AND#1:CLC:ADCtempa
+ CMP#12:BCSnotin:RTS
+.notin LDA#&FF:.parts RTS
+.M
+ LDAsprix:CMP#8:BCCnotin:CMP#120:BCSnotin
+ LDYspriy:CPY#248:BCCnotin:LDY#3
+.compr CMPycoor-1,Y:BCSfound:DEY:BNEcompr:.found TYA:RTS
+.ycoor
+ EQUB24:EQUB56:EQUB88
+.K
+ LDAsprix:CMP#124:BCCparts
+ CMP#156:BCSparts
+ LDYspriy:CPY#56:BCCparts
+ CPY#71:BCSparts
+ SEC:SBC#124:LSRA:LSRA:LSRA:CMPpalet:BEQpaint
+ STApalet:JSRPAINT:JMPRELES
+.paint TAX:LDAcolor,X
+.incre CLC:ADC#1:AND#7:LDY#3
+.pairs CMPcolor,Y:BEQincre:DEY:BPLpairs
+ STAcolor,X:JSRCOLOR:JMPRELES
+.lefty
+ EQUB10:EQUB8:EQUB6:EQUB4
+.N
+ LDXkeeys:LDAlefty,X:JMPWINDO
+.O
+ JSRPERIP:JSRARRGO:LDAchoic:BEQO
+ LDA#0:STAchoic:RTS
+.BUFFR
+ ]
+ P%=P%+780
+ [OPTA%
+ ]:NEXT
+

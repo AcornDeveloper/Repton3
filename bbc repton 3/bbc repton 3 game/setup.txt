@@ -1,0 +1,200 @@
+; SETUP
+
+ tempa=&70
+ tempx=&71
+ tempy=&72
+ tunes=&76
+ gates=&77
+ grids=&79
+ lives=&7F
+ score=&80
+ tiara=&82
+ slows=&86
+ WRITE=&1500
+ TYLER=&1503
+ INDIR=&1509
+ METAL=&1706
+ PASTL=&1715
+ SPACE=&171B
+ himem=&6000
+ OSW=&FFEE
+ OSB=&FFF4
+
+ P%=&1910
+
+.SETUP JMPA
+.COLOF JMPB
+.FLIPS JMPC
+.ROTAT JMPD
+.SIGNS JMPE
+.perip EQUB0
+.setup
+ EQUW&11F:EQUB10
+ EQUW&311
+ EQUS"Written by Matthew Atkinson for"
+ EQUW&31F:EQUB11
+ EQUS"Superior Software LTD. 1986"
+ EQUW&11F:EQUB30
+ EQUS"(c) Superior Software LTD. 1986"
+ EQUW&111
+ EQUW&A1F:EQUB13:EQUS"Sound :"
+ EQUW&A1F:EQUB15:EQUS"Music :"
+ EQUW&41F:EQUB17:EQUS"View status :"
+ EQUW&71F:EQUB19:EQUS"Controls :"
+ EQUW&C1F:EQUB21:EQUS"Map :"
+ EQUW&81F:EQUB23:EQUS"Restart :"
+ EQUW&21F:EQUB25
+ EQUS"Press"
+ EQUW&F1F:EQUB25
+ EQUS"to LOAD DATA FILE"
+ EQUW&21F:EQUB26
+ EQUS"Press"
+ EQUW&F1F:EQUB26
+ EQUS"to ENTER PASSWORD"
+.seton
+ EQUW&111
+ EQUW&21F:EQUB27
+ EQUS"Press"
+ EQUW&F1F:EQUB27
+ EQUS"to KILL YOURSELF"
+ EQUW&21F:EQUB28
+ EQUS"Press"
+ EQUW&F1F:EQUB28
+ EQUS"to PLAY GAME"
+ EQUW&211
+ EQUW&1B1F:EQUB13:EQUS"(Q/S)"
+ EQUW&1B1F:EQUB15:EQUS"(W/D)"
+ EQUW&121F:EQUB17:EQUS"Return"
+ EQUW&1B1F:EQUB19:EQUS"(J/K)"
+ EQUW&121F:EQUB21:EQUS"M"
+ EQUW&1B1F:EQUB21:EQUS"(A-E)"
+ EQUW&121F:EQUB23:EQUS"Shift-R"
+ EQUW&81F:EQUB25:EQUS"L"
+ EQUW&81F:EQUB26:EQUS"P"
+ EQUW&81F:EQUB27:EQUS"ESCAPE"
+ EQUW&81F:EQUB28:EQUS"SPACE"
+.sectn
+ EQUW&111
+ EQUW&11F:EQUB0
+ EQUS"!!!$ !!!$ !!!$ !!!!! #!!$ $   ! "
+ EQUS"!  ! !    !  !   !   !  ! !$  ! "
+ EQUS"!!!% !!$  !!!%   !   !  ! !&$ !"
+ EQUW&11F:EQUB3
+ EQUS"!&$  !    !"
+ EQUW&121F:EQUB3
+ EQUS"!   !  ! ! &$!"
+ EQUW&11F:EQUB4
+ EQUS"! &$ !!!% !"
+ EQUW&121F:EQUB4
+ EQUS"!   &!!% !  &!"
+ EQUW&211
+ EQUW&D1F:EQUB4
+ EQUS"#!!$"
+ EQUW&101F:EQUB5
+ EQUS"!"
+ EQUW&E1F:EQUB6
+ EQUS"#!!"
+ EQUW&101F:EQUB7
+ EQUS"!"
+ EQUW&D1F:EQUB8
+ EQUS"&!!%"
+.A
+ JSRWRITE
+ JSRTYLER
+ LDA#0
+ STAgrids:STAtiara
+ STAscore:STAscore+1
+ LDA#3
+ STAlives
+ LDA#&FF:STAslows
+ JSRCOLOF
+ LDX#setup AND255:LDY#setup/256
+ LDA#seton-setup:JSRINDIR
+ JSRSIGNS
+ LDX#seton AND255:LDY#seton/256
+ LDA#sectn-seton:JSRINDIR
+ JSRPASTL
+ JSRSWTCH
+.loops
+ JSRFLIPS
+ JSRSWTCH
+ JSRSELET:TYA:BMIloops:RTS
+.datas
+ EQUS"On  "
+ EQUS"Off "
+.types
+ EQUS"KeyboardJoystick"
+.swtch
+ EQUW&121F:EQUB13
+ EQUS"***"
+ EQUW&121F:EQUB19
+.shows
+ EQUS"********"
+.SWTCH
+ LDA#13:STAswtch+2
+ LDAgates:ASLA:ASLA:TAX:LDY#0
+.sound
+ LDAdatas,X:STAswtch+3,Y
+ INX:INY:CPY#3:BCCsound
+ LDAperip:ASLA:ASLA:ASLA:TAX:LDY#0
+.finit
+ LDAtypes,X:STAshows,Y
+ INX:INY:CPY#8:BCCfinit
+ JSRCOMMS
+ LDA#15:STAswtch+2
+ LDAtunes:ASLA:ASLA:TAX:LDY#0
+.music
+ LDAdatas,X:STAswtch+3,Y
+ INX:INY:CPY#3:BCCmusic
+.COMMS
+ LDA#19:JSROSB
+ LDX#swtch AND255:LDY#swtch/256
+ LDA#SWTCH-swtch:JMPINDIR
+.B
+ LDX#3
+.colof
+ LDA#19:JSROSW:TXA:JSROSW
+ LDA#0:JSROSW:JSROSW
+ JSROSW:JSROSW
+ DEX:BPLcolof:RTS
+.quirk
+ EQUB&EF:EQUB&AE
+.bachs
+ EQUB&DE:EQUB&CD
+.chose
+ EQUB&BA:EQUB&B9
+.C
+ LDYgates:LDXquirk,Y:JSRMETAL
+ BPLwobbl:LDAgates:EOR#1:STAgates
+.wobbl
+ LDYtunes:LDXbachs,Y:JSRMETAL
+ BPLleafs:LDAtunes:EOR#1:STAtunes
+.leafs
+ LDYperip:LDXchose,Y:JSRMETAL
+ BPLretun:LDAperip:EOR#1:STAperip
+.retun RTS
+.selet
+ EQUB&A9:EQUB&C8
+.SELET
+ LDY#2
+.ketty
+ TYA:PHA:LDXselet,Y:JSRMETAL
+ BMIpress
+ PLA:TAY:DEY:BPLketty
+ JMPSPACE
+.press
+ PLA:TAY:RTS
+.D
+ LDX#8
+.anoth
+ LDY#0
+ LDA#himem AND255:STAtempa
+ LDA#himem/256:STAtempx
+.sheet
+ LDA(tempa),Y:ASLA
+ STA(tempa),Y:DEY:BNEsheet
+ INCtempx:BPLsheet
+ DEX:BNEanoth:RTS
+.E
+ LDX#sectn AND255:LDY#sectn/256
+ LDA#A-sectn:JMPINDIR

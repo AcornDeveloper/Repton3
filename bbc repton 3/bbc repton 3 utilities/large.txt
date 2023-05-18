@@ -1,0 +1,160 @@
+   10 REM LARGE
+   20 REM Magnify sprites
+   30 REM Written 3 September 1986
+   40 REM Version 1.01
+   50 REM
+   60 ON ERROR MODE7:PROCerror:RUN
+   70 PROCassem
+   80 *TV255
+   90 REPEAT
+  100 MODE7
+  110 HIMEM=&3000
+  120 PROCsetup
+  130 REPEAT
+  140 *FX15
+  150 keypr=GET
+  160 UNTIL keypr>48 AND keypr<52
+  170 CLS
+  180 *FX15
+  190 IFkeypr=49:MODE7:HIMEM=&3000:PROCdispl:MODE5:HIMEM=&3000:PROCmagni
+  200 IFkeypr=50:PROCloads
+  210 IFkeypr=51:PROCcatal
+  220 UNTIL0
+  230 END
+  240 DEFPROCsetup
+  250 PROCcurse
+  260 PRINTTAB(16,2)"MAGNIFY"
+  270 PRINTTAB(16,3)"======="
+  280 PRINTTAB(4,6)"1. Magnify a sprite"
+  290 PRINTTAB(4,8)"2. Load data"
+  300 PRINTTAB(4,10)"3. Catalogue disc"
+  310 PRINTTAB(10,16)"Make your choice now"
+  320 ENDPROC
+  330 DEFPROCloads
+  340 PRINTTAB(12,2)"LOAD DATA SET"
+  350 PRINTTAB(12,3)"============="
+  360 PRINTTAB(8,6)"Input name of data set"
+  370 PRINTTAB(8,7)"which you wish to use."
+  380 PRINTTAB(11,9)">=";
+  390 INPUT" "files$
+  400 PROCdrive(9,11)
+  410 OSCLI"*LOAD "+files$+" 31E0"
+  420 ENDPROC
+  430 DEFPROCcatal
+  440 PROCdrive(7,6)
+  450 CLS
+  460 PRINTTAB(10,2)"DISC CATALOGUE"
+  470 PRINTTAB(10,3)"=============="
+  480 *CAT
+  490 PRINTTAB(7,20)"Press a key to continue."
+  500 REPEAT
+  510 UNTILINKEY(-129)<>-1
+  520 ENDPROC
+  530 DEFPROCdrive(X,Y)
+  540 PRINTTAB(X,Y)"Which drive? ";
+  550 REPEAT
+  560 press=GET
+  570 UNTILpress>47 AND press <52
+  580 PRINTCHR$press
+  590 OSCLI"*DRIVE "+CHR$press
+  600 PROCdelay(35)
+  610 ENDPROC
+  620 DEFPROCdelay(J%)
+  630 FORA%=0 TO J%
+  640 *FX19
+  650 NEXT
+  660 ENDPROC
+  670 DEFPROCdispl
+  680 PROCcurse
+  690 REPEAT
+  700 CLS
+  710 PRINTTAB(5,7)"Which sprite (0-47)";
+  720 *FX15
+  730 INPUTkeys%
+  740 UNTILkeys%<48 AND keys%>-1
+  750 ENDPROC
+  760 DEFPROCcurse
+  770 VDU23,1,0;0;0;0;
+  780 ENDPROC
+  790 DEFPROCmagni
+  800 PROCcurse
+  810 VDU19,1,4,0,0,0
+  820 VDU19,2,3,0,0,0
+  830 VDU19,3,2,0,0,0
+  840 look%=&4000+(keys%*128)
+  850 xlen%=56
+  860 ylen%=28
+  870 ky%=ylen%*32
+  880 VDU29,(1280-(xlen%*16))DIV2;64;
+  890 FOR byte%=0 TO 127
+  900 A%=byte%?look%
+  910 FORX%=0 TO 3
+  920 CALLPAINT
+  930 xcor%=(X%EOR3)*xlen%
+  940 xcor%=xcor%+(((byte%AND31)DIV8)*(xlen%*4))
+  950 ycor%=(byte%AND7)*ylen%
+  960 ycor%=ycor%+((byte%DIV32)*(ylen%*8))
+  970 ycor%=ky%-ycor%
+  980 PROCpixel(xcor%,ycor%)
+  990 NEXT
+ 1000 NEXT
+ 1010 COLOUR2
+ 1020 COLOUR128
+ 1030 PRINTTAB(3,30)"PRESS SPACEBAR"
+ 1040 REPEAT
+ 1050 UNTILINKEY(-99)
+ 1060 ENDPROC
+ 1070 DEFPROCassem
+ 1080 DIM CODE% 128
+ 1090 OSWCH=&FFEE
+ 1100 FORA%=0TO2STEP2
+ 1110 P%=CODE%
+ 1120 [OPTA%
+ 1130 .PAINT JMPA
+ 1140 .color
+ 1150 EQUB&11
+ 1160 EQUB&22
+ 1170 EQUB&44
+ 1180 EQUB&88
+ 1190 .A
+ 1200   ANDcolor,X
+ 1210   TAY
+ 1220   TXA
+ 1230   BEQnoadj
+ 1240   TYA
+ 1250 .nzero
+ 1260   LSRA
+ 1270   DEX
+ 1280   BNEnzero
+ 1290   TAY
+ 1300 .noadj
+ 1310   TYA
+ 1320   LSRA
+ 1330   PHP
+ 1340   LSRA
+ 1350   LSRA
+ 1360   LSRA
+ 1370   PLP
+ 1380   ROLA
+ 1390   TAX
+ 1400   LDA#18
+ 1410   JSROSWCH
+ 1420   LDA#0
+ 1430   JSROSWCH
+ 1440   TXA
+ 1450   JSROSWCH
+ 1460   RTS
+ 1470 ]:NEXT
+ 1480 ENDPROC
+ 1490 DEFPROCpixel(X,Y)
+ 1500 MOVE X,Y
+ 1510 PLOT1,xlen%,0
+ 1520 PLOT81,0,ylen%
+ 1530 PLOT1,-xlen%,0
+ 1540 PLOT85,X,Y
+ 1550 ENDPROC
+ 1560 DEFPROCerror
+ 1570 REPORT
+ 1580 PROCdelay(100)
+ 1590 ENDPROC
+

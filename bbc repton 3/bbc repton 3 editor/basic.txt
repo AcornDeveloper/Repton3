@@ -1,0 +1,301 @@
+; BASIC
+
+ aaaaa=&50
+ xxxxx=&51
+ yyyyy=&52
+ vectr=&53
+ pages=&60
+ tempa=&70
+ tempx=&71
+ tempy=&72
+ tempz=&73
+ trubl=&9C
+ teeth=&9E
+ STACK=&100
+ OSWVC=&20E
+ VIDEO=&300
+ diary=&C80
+ WRITE=&1500
+ WRONG=&1503
+ INDIR=&1556
+ WIPES=&155F
+ NOISE=&1565
+ METAL=&1568
+ grids=&1585
+ TI320=&1A80
+ STUFF=&260C
+ SMALL=&290F
+ WORDS=&31E0
+ CODES=&3230
+ himem=&5800
+ OSO=&FFF1
+ OSB=&FFF4
+ OSC=&FFF7
+
+ P%=&400
+
+ [OPTA%
+.STRIN JMPA
+.ALTER JMPB
+.MOTTL JMPC
+.PEEPS JMPD
+.EXORS JMPE
+.EDITS EQUD0:EQUD0
+.washs
+ EQUW&211
+ EQUW&31F:EQUB19
+ EQUS"(c) Superior Software LTD."
+ EQUW&D1F:EQUB21
+ EQUS"1986"
+ EQUW&311
+ EQUW&81F:EQUB12
+ EQUS"Written by"
+ EQUW&81F:EQUB14
+ EQUS"Matthew Atkinson"
+ EQUB26
+ EQUW&211:EQUW&8011
+ EQUW&C1F:EQUB5
+ EQUS"REPTON 3"
+ EQUW&B1F:EQUB7
+ EQUS"THE EDITOR"
+.A
+ LDAOSWVC:STAvectr
+ LDAOSWVC+1:STAvectr+1
+ LDA#PATCH AND255:STAOSWVC
+ LDA#PATCH/256:STAOSWVC+1
+ LDX#washs AND255:LDY#washs/256
+ LDA#A-washs:JMPINDIR
+.B
+ LDAdiary:CMP#&D:BEQMTAKE
+ LDAdiary:CMP#32:BNEnorip
+ LDX#0
+.rippl
+ LDAdiary+1,X:STAdiary,X
+ INX:CPX#11:BCCrippl
+.norip
+ CMP#ASC":":BNEnodri
+ LDAdiary+2
+ CMP#ASC".":BNEMTAKE
+ LDAdiary+1
+ STAdrive+5
+ LDX#drive AND255:LDY#drive/256
+ JSROSC
+ LDX#0
+.shufl
+ LDAdiary+3,X:STAdiary,X
+ INX:CPX#11:BCCshufl
+.nodri RTS
+.drive
+ EQUS"DRIVE*":EQUB&D
+.mtake
+ EQUB0:EQUB7
+ EQUS"Syntax error":EQUB0
+.MTAKE
+ LDX#MTAKE-mtake
+.pushs
+ LDAmtake,X:STASTACK,X
+ DEX:BPLpushs
+ BRK
+.cover
+ EQUB18:EQUB0:EQUB1
+ EQUW&419:EQUW0:EQUW0
+ EQUW&519:EQUW1280:EQUW0
+ EQUW&419:EQUW64:EQUW220
+ EQUW&119:EQUW896:EQUW0
+.C
+ LDA#6:STApages
+.lines
+ LDA#32:STApages+1
+.cipes
+ LDApages+1:CLC:ADC#3:TAX
+ LDApages:CLC:ADC#25:TAY
+ LDA#48:JSRSMALL
+ DECpages+1:BPLcipes
+ DECpages:BPLlines
+ LDX#cover AND255:LDY#cover/256
+ LDA#C-cover:JMPINDIR
+.E
+ LDA#0:STAtempa:LDX#63
+.exors
+ LDAWORDS,X:EORtempa:STAWORDS,X
+ INCtempa
+ DEX:BPLexors
+.users RTS
+.peeps
+ EQUW&11:EQUW&8211
+ EQUB28
+ EQUB2:EQUB23
+ EQUB13:EQUB2
+ EQUB12:EQUB26
+ EQUW&B1F:EQUB3
+ EQUS"ENTER CODES"
+ EQUW&B1F:EQUB4
+ EQUS"==========="
+.D
+ JSRZEROS
+ LDACODES:ORACODES+1
+ BEQusers
+ LDA#124:JSROSB
+ LDA#1:LDX#7
+.noway
+ STAEDITS,X:DEX:BPLnoway
+ LDX#peeps AND255:LDY#peeps/256
+ LDA#D-peeps:JSRINDIR
+ LDA#15:LDX#0:JSROSB
+ LDA#0:STApages
+.loops
+ LDApages:ASLA:ADC#6
+ STAbegin:STApassd
+ LDApages:CLC:ADC#65:STApword
+ LDX#stray AND255:LDY#stray/256
+ LDA#bytes-stray:JSRINDIR
+ LDX#param AND255:LDY#param/256
+ LDA#0:JSROSO:BCSescap
+ JSRCONVR
+ LDApages:ASLA:TAX
+ LDAdiary:CMP#&D:BEQnorec
+ LDAtempa:CMPCODES,X:BNEnorec
+ LDAtempx:CMPCODES+1,X:BNEnorec
+.strin
+ LDXpages:LDA#0:STAEDITS,X
+ LDX#coret AND255:LDY#coret/256
+ LDA#space-coret:JSRINDIR
+ JSRNOISE:JMPloopx
+.norec
+ LDXpages:BNElegal
+ JMPPEEPS
+.legal
+ INCEDITS,X
+.loopx
+ INCpages:LDApages:CMP#8:BCCloops
+ LDX#space AND255:LDY#space/256
+ LDA#param-space:JSRINDIR
+.sorts
+ LDX#&9D:JSRMETAL:BPLsorts
+ JMPWIPES
+.escap
+ JSRZEROS
+ JSRWIPES
+ JMPSTUFF
+.ZEROS
+ LDA#0:LDX#7
+.zeros
+ STAEDITS,X:DEX:BPLzeros:RTS
+.coret
+ EQUW&111F
+.passd
+ EQUB0
+ EQUS"Correct!"
+.space
+ EQUW&61F:EQUB22
+ EQUS"Press <SPACE> to EXIT"
+.param
+ EQUWdiary:EQUB5:EQUB32:EQUB128
+.stray
+ EQUW&81F
+.begin
+ EQUB0
+.pword
+ EQUS" =>"
+.bytes
+ EQUD&100
+ EQUD&0
+ EQUD&0
+ EQUD&0
+ EQUD&5028100
+ EQUD&9010000
+ EQUD&508
+ EQUD&82000404
+.flaps EQUB0
+.count EQUB0
+.addrs EQUWhimem
+.masks EQUW0
+.store EQUD0
+.works EQUB0
+.PATCH
+ STAaaaaa:STXxxxxx:STYyyyyy
+ LDAflaps:BNEtraps
+ LDAcount:BNEnzero
+ LDAaaaaa:CMP#32:BCSchars:TAY
+ LDAbytes,Y:AND#&F:STAcount
+ LDAbytes,Y:BPLwings:STYflaps
+.wings
+ LDAaaaaa:LDXxxxxx:LDYyyyyy
+ JMP(vectr)
+.nzero
+ LDAaaaaa:DECcount:JMP(vectr)
+.traps
+ LDXcount:LDAaaaaa:STAstore-1,X
+ DECcount:BNEwings
+ LDAflaps:CMP#31:BNEcotin
+ LDAstore:ASLA:TAX
+ LDAstore+1:ASLA:ASLA:ASLA
+ ROLaddrs+1:CLC:ADCTI320,X
+ STAaddrs
+ LDAaddrs+1:AND#1:ADCTI320+1,X
+ STAaddrs+1
+.comms
+ LDA#0:STAflaps
+ LDAaaaaa:LDXxxxxx:LDYyyyyy
+ JMP(vectr)
+.cotin
+ LDAstore:ROLA:ROLA:AND#1
+ TAX:LDAstore:AND#&F:STAmasks,X
+ JMPcomms
+.chars
+ SEC:SBC#32:PHA
+ CMP#95:BNEnodel
+ LDAaddrs:SEC:SBC#8:STAaddrs
+ LDAaddrs+1:SBC#0
+ CMP#himem/256:BCSlower:LDA#&80
+.lower
+ STAaddrs+1:LDA#0
+.nodel
+ ASLA:ROLtrubl+1
+ ASLA:ROLtrubl+1
+ ASLA:ROLtrubl+1:STAtrubl:CLC
+ LDAtrubl+1:AND#7:ADC#&12
+ STAtrubl+1
+ LDAaddrs:STAteeth
+ LDAaddrs+1:STAteeth+1
+ LDY#7
+.celit
+ LDA(trubl),Y
+ LSRA:LSRA:LSRA:LSRA:TAX:PHA
+ LDAtable,X
+ LDXmasks:ANDsmall,X:STAworks
+ PLA:EOR#&F:TAX
+ LDAtable,X
+ LDXmasks+1:ANDsmall,X
+ ORAworks
+ STA(teeth),Y
+ DEY:BPLcelit
+ PLA:CMP#95:BEQdelet
+ LDAaddrs:CLC:ADC#8:STAaddrs
+ LDAaddrs+1:ADC#0:BPLwraps
+ LDA#himem/256
+.wraps
+ STAaddrs+1
+.delet
+ LDAaaaaa:LDXxxxxx:LDYyyyyy:RTS
+.table
+ EQUD&33221100
+ EQUD&77665544
+ EQUD&BBAA9988
+ EQUD&FFEEDDCC
+.small
+ EQUD&FFF00F00
+.CONVR
+ LDY#0
+ LDX#0:STXtempa:STXtempx:BEQregin
+.subbo
+ STAtempy:STXtempz
+ ASLtempa:ROLtempx
+ LDAtempy:ADCtempa:STAtempy
+ LDAtempz:ADCtempx:STAtempz
+ ASLtempa:ROLtempx
+ ASLtempa:ROLtempx
+ LDAtempa:ADCtempy:STAtempa
+ LDAtempx:ADCtempz:STAtempx
+.regin LDAdiary,Y:INY
+ SEC:SBC#&30:CMP#&A:BCCsubbo:RTS

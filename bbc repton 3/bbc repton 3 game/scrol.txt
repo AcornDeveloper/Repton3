@@ -1,0 +1,176 @@
+; SCROL
+ randy=&10
+ tempa=&70
+ tempx=&71
+ tempy=&72
+ tempz=&73
+ indir=&74
+ death=&78
+ start=&7B
+ watch=&7D
+ STACK=&100
+ IRQ2V=&206
+ ENTVC=&220
+ BUFFR=&900
+ field=&C00
+ fielh=&C20
+ diary=&C80
+ TYLER=&1503
+ INDIR=&1509
+ PASTL=&1715
+ COLOF=&1913
+ ROTAT=&1919
+ MUSIC=&2966
+ CLOCK=&296F
+ himem=&6000
+ SHELA=&FE00
+ OSF=&FFDD
+ OSW=&FFEE
+ OSO=&FFF1
+ OSB=&FFF4
+ OSC=&FFF7
+
+ P%=&1E00
+
+.SCROL JMPA
+.INRUP JMPB
+.NUMBR JMPC
+.FILES JMPD
+.CHACK
+ LDAstart+1:BMIsubtr
+ CMP#&60:BCSchack
+ LDA#&7F:STAstart+1:RTS
+.subtr
+ LDA#&60:STAstart+1:RTS
+.bytes
+ EQUW8:EQUW-8
+ EQUW-256:EQUW256
+.A
+ ASLA:TAX
+ LDAstart:CLC:ADCbytes,X:STAstart
+ LDAstart+1:ADCbytes+1,X:STAstart+1
+ JSRCHACK
+ LDA#19:JSROSB
+ SEI
+ LDX#12:STXSHELA
+ LDAstart+1:STAtempa
+ LSRA:LSRA:LSRA:STASHELA+1
+ INX:STXSHELA
+ LDAstart:LSRtempa:RORA:LSRtempa
+ RORA:LSRtempa:RORA:STASHELA+1
+.chack RTS
+.B
+ LDA#EVENT AND255:STAENTVC
+ LDA#EVENT/256:STAENTVC+1
+ LDA#TUNES AND255:STAIRQ2V
+ LDA#TUNES/256:STAIRQ2V+1
+ LDA#14:LDX#4:JMP(&20A)
+.apple EQUB3
+.timer EQUB7
+.EVENT
+ PHP:PHA:TXA:PHA:TYA:PHA
+ JSRCLOCK
+ CLC:LDY#&29:LDX#&FC
+.loops
+ TYA:LDYrandy,X
+ ADCrandy,X:STArandy,X
+ INX:BNEloops
+ DECapple:BNEexits
+ LDA#3:STAapple
+ LDAdeath:BNEexits
+ LDAwatch:SEC:SBC#1:STAwatch
+ LDAwatch+1:SBC#0:STAwatch+1
+ BCSexits
+ LDA#0:STAwatch:STAwatch+1
+ INCdeath
+.exits
+ PLA:TAY:PLA:TAX:PLA:PLP:RTS
+.TUNES
+ LDA&FC:PHA:TXA:PHA:TYA:PHA
+ LDASHELA+&64
+ DECtimer:BNEquiet
+ LDA#7:STAtimer
+ JSRMUSIC
+.quiet
+ PLA:TAY:PLA:TAX:PLA:STA&FC:RTI
+.datac EQUWBUFFR:EQUW-672
+.C
+ LDX#4
+.getit
+ LDAdatac-1,X:STAtempa-1,X
+ DEX:BNEgetit
+ TXA:LDY#32
+.alzer
+ STAfield-1,Y:STAfielh-1,Y
+ DEY:BNEalzer
+.trace
+ LDA(tempa),Y:CMP#32:BCSnotin:TAX
+ INCfield,X:BNEnotin:INCfielh,X
+.notin
+ INY:BNEposit:INCtempx
+.posit
+ INCtempy:BNEtrace
+ INCtempz:BNEtrace:RTS
+.loads
+ EQUWdiary
+ EQUD&31E0:EQUD0
+ EQUD0:EQUD0
+.block
+ EQUWdiary:EQUB12:EQUB32:EQUB126
+.futhr
+ EQUD0:EQUD0
+.files
+ EQUW&211
+ EQUW&81F:EQUB7
+ EQUS"ENTER  FILENAME"
+ EQUW&111
+ EQUW&171F:EQUB12:EQUS"!"
+ EQUW&71F:EQUB12:EQUS"! "
+ EQUW&311
+.D
+ JSRCOLOF
+ JSRTYLER
+ LDA#124:JSROSB
+ LDX#files AND255:LDY#files/256
+ LDA#D-files:JSRINDIR
+ JSRPASTL
+ LDA#21:LDX#0:JSROSB
+ LDX#block AND255:LDY#block/256
+ LDA#0:JSROSO
+ JSRALTER
+ LDX#loads AND255:LDY#loads/256
+ LDA#&FF:JSROSF:JMPROTAT
+.ALTER
+ LDAdiary:CMP#&D:BEQMTAKE
+ LDAdiary:CMP#32:BNEcards
+ LDX#0
+.shove
+ LDAdiary+1,X:STAdiary,X
+ INX:CPX#12:BCCshove
+ BCSALTER
+.cards
+ LDAdiary:CMP#ASC":":BNEnodri
+ LDAdiary+2
+ CMP#ASC".":BNEMTAKE
+ LDAdiary+1
+ JSRDRIVE
+ LDX#0
+.shufl
+ LDAdiary+3,X:STAdiary,X
+ INX:CPX#12:BCCshufl
+.nodri RTS
+.drive
+ EQUS"DRIVE *":EQUB&D
+.DRIVE
+ STAdrive+6
+ LDX#drive AND255:LDY#drive/256
+ JMPOSC
+.mtake
+ EQUB0:EQUB7
+ EQUS"Syntax error":EQUB0
+.MTAKE
+ LDX#MTAKE-mtake
+.pushs
+ LDAmtake,X:STASTACK,X
+ DEX:BPLpushs
+ BRK

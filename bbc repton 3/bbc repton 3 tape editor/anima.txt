@@ -1,0 +1,118 @@
+   10 REM ANIMA
+   20 *K.0MO.7|MVDU14|ML.920,|M
+   30 *K.1RUN|M
+   40 *K.2REN.|M
+   50 *K.3P.~P%|M
+   60 *K.10PA.=&5900|MO.|M*FX12,2|M
+   70 *TV255
+   80 pages=&60
+   90 tempa=&70
+  100 tempx=&71
+  110 tempy=&72
+  120 tempz=&73
+  130 choic=&80
+  140 paras=&86
+  150 EDITS=&40F
+  160 INDIR=&1556
+  170 ghost=&1586
+  180 BLOBS=&19C0
+  190 ARRON=&1AC0
+  200 AROFF=&1AC3
+  210 PERIP=&1AC9
+  220 RELES=&1AD5
+  230 DELAY=&2406
+  240 CODES=&3230
+  250 BASES=&32E0
+  260 SPRIT=&4000
+  270 OSW=&FFEE
+  280 OSO=&FFF1
+  290 OSB=&FFF4
+  300 FORA%=0TO2STEP2
+  310 P%=&2600
+  320 [OPTA%
+  330 .ANIMA JMPA
+  340 .FRAME JMPB
+  350 .SLATE JMPC
+  360 .DIREC JMPD
+  370 .STUFF JMPE
+  380 .A
+  390 LDXghost:CPX#30:BCCnoanm:CPX#47:BEQnoanm
+  400 JSRAROFF:LDXghost
+  410 LDAlinks-30,X:PHA:AND#7:STApages
+  420 PLA:LSRA:LSRA:LSRA:STApages+1
+  430 .round LDYpages+1:LDAchart,Y:JSRB+3:LDX#21:STXpages+2
+  440 .delay LDA#19:JSROSB:JSRPERIP:LDAchoic:BNEpress:DECpages+2:BNEdelay
+  450 INCpages+1:DECpages:BNEround:BEQA
+  460 .press
+  470 JSRARRON:JSRRELES
+  480 .B
+  490 LDAghost:STAparas
+  500 LDX#33:STXparas+1
+  510 LDY#15:STYparas+2
+  520 STYparas+3:STYparas+4
+  530 JMPBLOBS
+  540 .noanm RTS
+  550 .links
+  560 EQUB(rlook-chart)*8+4
+  570 EQUB(spirt-chart)*8+2
+  580 EQUB(spirt-chart)*8+2
+  590 EQUB(monst-chart)*8+2
+  600 EQUB(monst-chart)*8+2
+  610 EQUB(rlook-chart)*8+4
+  620 EQUB(rlook-chart)*8+4
+  630 EQUB(walkl-chart)*8+6
+  640 EQUB(walkl-chart)*8+6
+  650 EQUB(walkl-chart)*8+6
+  660 EQUB(walkl-chart)*8+6
+  670 EQUB(walkr-chart)*8+6
+  680 EQUB(walkr-chart)*8+6
+  690 EQUB(walkr-chart)*8+6
+  700 EQUB(walkr-chart)*8+6
+  710 EQUB(waves-chart)*8+2
+  720 EQUB(waves-chart)*8+2
+  730 .chart
+  740 .rlook EQUB30:EQUB35:EQUB30:EQUB36
+  750 .spirt EQUB31:EQUB32
+  760 .monst EQUB33:EQUB34
+  770 .walkl EQUB37:EQUB38:EQUB39:EQUB40
+  780 EQUB39:EQUB38
+  790 .walkr EQUB41:EQUB42:EQUB43:EQUB44
+  800 EQUB43:EQUB42
+  810 .waves EQUB45:EQUB46
+  820 .slate
+  830 EQUB18:EQUB0:EQUB128
+  840 EQUB24
+  850 EQUW1056:EQUW416
+  860 EQUW1176:EQUW540
+  870 EQUB16:EQUB26
+  880 .C
+  890 LDX#slate AND255:LDY#slate/256
+  900 LDA#C-slate:JMPINDIR
+  910 .D
+  920 RTS
+  930 .fives
+  940 EQUB&C6:EQUB&18:EQUB&63
+  950 EQUB&8C:EQUB&31
+  960 .E
+  970 LDA#0:LDX#15
+  980 .users
+  990 STACODES,X:DEX:BPLusers
+ 1000 LDX#7:STXtempy
+ 1010 .daisy
+ 1020 STAEDITS,X:DEX:BPLdaisy
+ 1030 LDA#BASES AND255:STAtempa
+ 1040 LDA#BASES/256:STAtempx
+ 1050 .relox
+ 1060 LDX#84
+ 1070 .mobil
+ 1080 LDY#4
+ 1090 .chain
+ 1100 LDAfives,Y:STA(tempa),Y
+ 1110 DEY:BPLchain
+ 1120 LDAtempa:CLC:ADC#5:STAtempa
+ 1130 BCCnofiv:INCtempx
+ 1140 .nofiv
+ 1150 DEX:BNEmobil
+ 1160 DECtempy:BPLrelox:RTS
+ 1170 ]:NEXT
+
